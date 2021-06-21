@@ -131,7 +131,7 @@ android {
     }
 
     defaultConfig {
-        applicationId "com.dbtapp"
+        applicationId "net.albemuth.dbtapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1

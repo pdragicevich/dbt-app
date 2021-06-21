@@ -1,4 +1,4 @@
-package com.dbtapp;
+package net.albemuth.dbtapp;
 
 import com.facebook.react.ReactActivity;
 

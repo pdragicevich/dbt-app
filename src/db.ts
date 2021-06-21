@@ -6,35 +6,53 @@ async function withDb(callback: (_arg: SQLite.SQLiteDatabase) => void) {
   callback(db);
 }
 
+const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
+  id INTEGER PRIMARY KEY,
+  section TEXT NOT NULL,
+  title TEXT NOT NULL,
+  content TEXT NOT NULL)`;
+
+const CreateTableChecklistSQL = `CREATE TABLE IF NOT EXISTS checklist(
+  id INTEGER PRIMARY KEY,
+  item TEXT NOT NULL)`;
+
+const CreateTableChecklistLogSQL = `CREATE TABLE IF NOT EXISTS checklist_log(
+  id INTEGER PRIMARY KEY,
+  checklist_id INTEGER,
+  logged INTEGER NOT NULL)`;
+
+const CreateTableMoodLogSQL = `CREATE TABLE IF NOT EXISTS mood_log(
+  id INTEGER PRIMARY KEY,
+  mood INTEGER NOT NULL)`;
+
 const init = async () => {
   try {
-    await withDb(db => {
-      db.transaction(tx0 => {
-        tx0.executeSql(
-          `CREATE TABLE skills(
-            skill_id INTEGER PRIMARY KEY AUTOINCREMENT,
-            section VARCHAR(20),
-            title VARCHAR(100),
-            content TEXT)`,
-          [],
-          tx1 => {
-            tx1.executeSql(
-              `INSERT INTO skills ('section', 'title', 'content') VALUES
-            ('DBT', 'TIPP', 'TIPP is temperature, intense exercise, paced stuff'),
-            ('CBT', 'Check facts', 'omg'),
-            ('Schema', 'Unrelenting standards', 'yeah')`,
-              [],
-            );
-          },
-          err => {
-            throw err;
-          },
-        );
-      });
-    });
+    await execInitScript(CreateSkillsTableSQL);
+    await execInitScript(CreateTableChecklistSQL);
+    await execInitScript(CreateTableChecklistLogSQL);
+    await execInitScript(CreateTableMoodLogSQL);
   } catch (err) {
     console.error(err);
   }
+};
+
+const execInitScript = async (sql1: string, sql2?: string) => {
+  await withDb(db => {
+    db.transaction(tx0 => {
+      tx0.executeSql(
+        sql1,
+        [],
+        tx1 => {
+          if (sql2 != null) {
+            tx1.executeSql(sql2, []);
+          }
+        },
+        err => {
+          throw err;
+        },
+      );
+    });
+  });
 };
 
 const findSkill = async (searchTerm: string) => {
