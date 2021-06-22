@@ -1,4 +1,5 @@
 import SQLite from 'react-native-sqlite-storage';
+import Result from './models/Result';
 import SkillSearchResult from './models/SkillSearchResult';
 
 async function withDb(callback: (_arg: SQLite.SQLiteDatabase) => void) {
@@ -25,14 +26,15 @@ const CreateTableMoodLogSQL = `CREATE TABLE IF NOT EXISTS mood_log(
   id INTEGER PRIMARY KEY,
   mood INTEGER NOT NULL)`;
 
-const init = async () => {
+const init: () => Promise<Result> = async () => {
   try {
     await execInitScript(CreateSkillsTableSQL);
     await execInitScript(CreateTableChecklistSQL);
     await execInitScript(CreateTableChecklistLogSQL);
     await execInitScript(CreateTableMoodLogSQL);
+    return { success: true };
   } catch (err) {
-    console.error(err);
+    return { success: false, error: err };
   }
 };
 
@@ -55,27 +57,33 @@ const execInitScript = async (sql1: string, sql2?: string) => {
   });
 };
 
+const rebuild: () => Promise<Result> = async () => {
+  try {
+    await SQLite.deleteDatabase({ name: 'dbt.db', location: 'default' });
+    await init();
+  } catch (ex) {
+    return { success: false, error: ex };
+  }
+  return { success: true };
+};
+
 const findSkill = async (searchTerm: string) => {
   const result: SkillSearchResult[] = [];
-  try {
-    await withDb(db => {
-      db.transaction(tx => {
-        tx.executeSql(
-          'SELECT * FROM skills WHERE title LIKE ?',
-          [`%${searchTerm}%`],
-          (tx1, res) => {
-            console.log(res);
-            for (let i = 0; i < res.rows.length; i++) {
-              result.push(res.rows.item(i));
-            }
-          },
-        );
-      });
+  await withDb(db => {
+    db.transaction(tx => {
+      tx.executeSql(
+        'SELECT * FROM skills WHERE title LIKE ?',
+        [`%${searchTerm}%`],
+        (tx1, res) => {
+          console.log(res);
+          for (let i = 0; i < res.rows.length; i++) {
+            result.push(res.rows.item(i));
+          }
+        },
+      );
     });
-  } catch (err) {
-    console.error(err);
-  }
+  });
   return result;
 };
 
-export default { init, findSkill };
+export default { init, findSkill, rebuild };

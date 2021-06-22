@@ -1,20 +1,35 @@
-import React from 'react';
-import { View, Text } from 'react-native';
-import { Button } from 'react-native-paper';
+import React, { useState } from 'react';
+import { View } from 'react-native';
+import { Button, Title, Snackbar } from 'react-native-paper';
+import db from '../../db';
 
-const Settings = () => {
-  function initDb() {
-    console.log('initDb!');
+const SettingsScreen = () => {
+  const [message, setMessage] = useState('');
+
+  async function initDb() {
+    try {
+      await db.rebuild();
+      setMessage('Rebuilt OK!');
+    } catch (ex) {
+      setMessage('There was a problem doing that!');
+    }
+  }
+
+  function onDismissMessage() {
+    setMessage('');
   }
 
   return (
     <View>
-      <Text>Settings</Text>
+      <Title>Settings</Title>
       <Button icon="alert" mode="contained" onPress={initDb}>
         Re-initialise database
       </Button>
+      <Snackbar visible={!!message} onDismiss={onDismissMessage}>
+        {message}
+      </Snackbar>
     </View>
   );
 };
 
-export default Settings;
+export default SettingsScreen;
