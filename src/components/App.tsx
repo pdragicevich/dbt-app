@@ -1,11 +1,12 @@
-import React, { useEffect } from 'react';
-import db from '../db';
+import React from 'react';
 import HomeScreen from './HomeScreen/HomeScreen';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import AppHeader from './AppHeader';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import DbContext from '../DbContext';
+import sqlDb from '../Database/SQLDatabase';
 
 type TabParamList = {
   Home: undefined;
@@ -15,12 +16,8 @@ type TabParamList = {
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 const App = () => {
-  useEffect(() => {
-    db.init();
-  });
-
   return (
-    <>
+    <DbContext.Provider value={sqlDb}>
       <AppHeader />
       <NavigationContainer>
         <Tab.Navigator>
@@ -46,7 +43,7 @@ const App = () => {
           />
         </Tab.Navigator>
       </NavigationContainer>
-    </>
+    </DbContext.Provider>
   );
 };
 

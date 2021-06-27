@@ -1,14 +1,17 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Title, Snackbar } from 'react-native-paper';
-import db from '../../db';
+import { useDatabase } from '../../DbContext';
 
 const SettingsScreen = () => {
+  const db = useDatabase();
+
   const [message, setMessage] = useState('');
 
   async function initDb() {
     try {
-      await db.rebuild();
+      const result = await db.rebuild();
+      console.log(result);
       setMessage('Rebuilt OK!');
     } catch (ex) {
       setMessage('There was a problem doing that!');
