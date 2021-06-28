@@ -1,9 +1,9 @@
 import { AppState, AppStateStatus } from 'react-native';
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import ChecklistItem from '../models/ChecklistItem';
-import Result from '../models/Result';
+import { result } from '../models/Result';
 import SkillSearchResult from '../models/SkillSearchResult';
-import { hasAny } from '../utils';
+import { hasAny, unixDateToday } from '../utils';
 import Database from './Database';
 import { DbInit } from './DbInit';
 
@@ -63,25 +63,45 @@ const findSkill = (searchTerm: string) =>
   ]);
 
 const getChecklistItems = () =>
-  select<ChecklistItem>('SELECT * FROM checklist');
+  select<ChecklistItem>(
+    `
+SELECT c.id, c.item, l.logged FROM checklist c
+LEFT OUTER JOIN checklist_log l ON c.id = l.checklist_id AND l.logged = ?`,
+    [unixDateToday()],
+    x => {
+      return {
+        id: x.id,
+        item: x.item,
+        checked: x.logged != null,
+      };
+    },
+  );
 
-async function select<TResult>(sql: string, params?: string[]) {
-  const result: TResult[] = [];
+async function select<TResult>(
+  sql: string,
+  params?: Array<string | number>,
+  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
+  converter?: (r: any) => TResult,
+) {
+  const returnedRows: TResult[] = [];
   const db = await getDatabase();
   const results = await db.executeSql(sql, params);
 
   if (!hasAny(results) || !hasAny(results[0].rows)) {
-    console.warn('No results');
-    return result;
+    return returnedRows;
   }
 
   const rows = results[0].rows;
 
   for (let i = 0; i < rows.length; i++) {
-    result.push(rows.item(i));
+    if (converter) {
+      returnedRows.push(converter(rows.item(i)));
+    } else {
+      returnedRows.push(rows.item(i));
+    }
   }
 
-  return result;
+  return returnedRows;
 }
 
 const rebuild = async () => {
@@ -92,15 +112,39 @@ const rebuild = async () => {
     const initialiser = new DbInit();
     await initialiser.updateDatabaseTables(db);
   } catch (ex) {
-    return { success: false, error: ex } as Result;
+    return result(false, ex);
   }
-  return { success: true } as Result;
+  return result(true);
+};
+
+const recordChecklistCheck = async (id: number, checked: boolean) => {
+  try {
+    const db = await getDatabase();
+    const today = unixDateToday();
+
+    await db.transaction(tx => {
+      tx.executeSql(
+        'DELETE FROM checklist_log WHERE checklist_id = ? AND logged = ?',
+        [id, today],
+      );
+      if (checked) {
+        tx.executeSql(
+          'INSERT INTO checklist_log(checklist_id, logged) VALUES (?,?)',
+          [id, today],
+        );
+      }
+    });
+    return result(true);
+  } catch (ex) {
+    return result(false, ex);
+  }
 };
 
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
   rebuild,
+  recordChecklistCheck,
 };
 
 export default sqlDatabase;

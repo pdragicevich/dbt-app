@@ -9,11 +9,19 @@ const SettingsScreen = () => {
   const [message, setMessage] = useState('');
 
   async function initDb() {
+    let success = false;
     try {
       const result = await db.rebuild();
-      console.log(result);
-      setMessage('Rebuilt OK!');
+      success = result.success;
+      if (!result.success) {
+        console.error('initDb', result);
+      }
     } catch (ex) {
+      console.error('initDb', ex);
+    }
+    if (success) {
+      setMessage('Rebuilt OK!');
+    } else {
       setMessage('There was a problem doing that!');
     }
   }

@@ -1,4 +1,5 @@
 /* eslint-disable  @typescript-eslint/no-explicit-any */
+
 export function hasAny(obj: any) {
   const len = obj?.length;
   if (typeof len !== 'number') {
@@ -12,4 +13,21 @@ export function guardedTrim(obj: any): string {
     return '';
   }
   return obj.toString().trim();
+}
+
+export function unixDate(date: Date): number {
+  return Math.floor(date.valueOf() / 1000);
+}
+
+export function unixDateNow(): number {
+  return unixDate(new Date());
+}
+
+export function unixDateToday(): number {
+  const date = new Date();
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+  return unixDate(date);
 }
