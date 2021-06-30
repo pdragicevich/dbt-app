@@ -7,9 +7,11 @@ import { createMaterialBottomTabNavigator } from '@react-navigation/material-bot
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import DbContext from '../DbContext';
 import sqlDb from '../Database/SQLDatabase';
+import HelpScreen from './HelpScreen/HelpScreen';
 
 type TabParamList = {
   Home: undefined;
+  Help: undefined;
   Settings: undefined;
 };
 
@@ -28,6 +30,20 @@ const App = () => {
               title: 'Home',
               tabBarIcon: ({ color }) => (
                 <MaterialCommunityIcons name="home" color={color} size={26} />
+              ),
+            }}
+          />
+          <Tab.Screen
+            name="Help"
+            component={HelpScreen}
+            options={{
+              title: 'Help!',
+              tabBarIcon: ({ color }) => (
+                <MaterialCommunityIcons
+                  name="hospital-box"
+                  color={color}
+                  size={26}
+                />
               ),
             }}
           />

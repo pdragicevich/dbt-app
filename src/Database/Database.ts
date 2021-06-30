@@ -7,6 +7,7 @@ interface Database {
   getChecklistItems: () => Promise<ChecklistItem[]>;
   recordChecklistCheck: (_arg0: number, _arg1: boolean) => Promise<Result>;
   rebuild: () => Promise<Result>;
+  saveMood: (_arg0: number) => Promise<Result>;
 }
 
 export default Database;

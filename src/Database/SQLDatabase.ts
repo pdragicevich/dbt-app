@@ -3,7 +3,7 @@ import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import ChecklistItem from '../models/ChecklistItem';
 import { result } from '../models/Result';
 import SkillSearchResult from '../models/SkillSearchResult';
-import { hasAny, unixDateToday } from '../utils';
+import { hasAny, unixDateNow, unixDateToday } from '../utils';
 import Database from './Database';
 import { DbInit } from './DbInit';
 
@@ -64,8 +64,7 @@ const findSkill = (searchTerm: string) =>
 
 const getChecklistItems = () =>
   select<ChecklistItem>(
-    `
-SELECT c.id, c.item, l.logged FROM checklist c
+    `SELECT c.id, c.item, l.logged FROM checklist c
 LEFT OUTER JOIN checklist_log l ON c.id = l.checklist_id AND l.logged = ?`,
     [unixDateToday()],
     x => {
@@ -140,11 +139,27 @@ const recordChecklistCheck = async (id: number, checked: boolean) => {
   }
 };
 
+const saveMood = async (mood: number) => {
+  try {
+    const db = await getDatabase();
+    const now = unixDateNow();
+
+    await db.executeSql('INSERT INTO mood_log(logged,mood) VALUES (?,?)', [
+      now,
+      mood,
+    ]);
+    return result(true);
+  } catch (ex) {
+    return result(false, ex);
+  }
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
   rebuild,
   recordChecklistCheck,
+  saveMood,
 };
 
 export default sqlDatabase;

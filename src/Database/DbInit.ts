@@ -36,6 +36,7 @@ const CreateTableChecklistLogSQL = `CREATE TABLE IF NOT EXISTS checklist_log(
 
 const CreateTableMoodLogSQL = `CREATE TABLE IF NOT EXISTS mood_log(
     id INTEGER PRIMARY KEY,
+    logged INTEGER NOT NULL,
     mood INTEGER NOT NULL);`;
 
 const CreateTableGratitudeLogSQL = `CREATE TABLE IF NOT EXISTS gratitude_log(
@@ -61,9 +62,6 @@ export class DbInit {
   public async updateDatabaseTables(database: SQLiteDatabase): Promise<void> {
     console.log('Beginning database updates...');
 
-    // First: create tables if they do not already exist
-    await database.transaction(this.createTables);
-
     // Get the database version.
     const dbVersion = await this.getDatabaseVersion(database);
 
@@ -72,6 +70,9 @@ export class DbInit {
     // Perform DB updates based on this version
     // This is included as an example of how you make database schema changes once the app has been shipped
     if (dbVersion < 1) {
+      // First: create tables if they do not already exist
+      await database.transaction(this.createTables);
+
       // Uncomment the next line, and the referenced function below, to enable this
       await database.transaction(this.preVersion1Inserts);
     }
@@ -85,12 +86,10 @@ export class DbInit {
   // Perform initial setup of the database tables
   private createTables(tx: SQLite.Transaction) {
     // DANGER! For dev only
-    // const dropAllTables = false;
-    // if (dropAllTables) {
-    //   tx.executeSql('DROP TABLE IF EXISTS List;');
-    //   tx.executeSql('DROP TABLE IF EXISTS ListItem;');
-    //   tx.executeSql('DROP TABLE IF EXISTS Version;');
-    // }
+    const dropAllTables = false;
+    if (dropAllTables) {
+      tx.executeSql('DROP TABLE IF EXISTS mood_log;');
+    }
 
     for (const sql of TableSQL) {
       tx.executeSql(sql);
