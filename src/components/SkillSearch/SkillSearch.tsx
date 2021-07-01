@@ -16,9 +16,10 @@ const SkillSearch = ({ onHide }: { onHide: () => void }) => {
     const trimmed = guardedTrim(str);
     if (trimmed.length < 1) {
       onHide();
+    } else {
+      setSearch(str);
+      findSkill(str);
     }
-    setSearch(str);
-    findSkill(str);
   }
 
   const findSkill = _debounce(str => {
