@@ -12,6 +12,7 @@ import HelpScreen from './HelpScreen/HelpScreen';
 type TabParamList = {
   Home: undefined;
   Help: undefined;
+  Gratitude: undefined;
   Settings: undefined;
 };
 
@@ -22,14 +23,14 @@ const App = () => {
     <DbContext.Provider value={sqlDb}>
       <AppHeader />
       <NavigationContainer>
-        <Tab.Navigator>
+        <Tab.Navigator shifting={false}>
           <Tab.Screen
             name="Home"
             component={HomeScreen}
             options={{
               title: 'Home',
               tabBarIcon: ({ color }) => (
-                <MaterialCommunityIcons name="home" color={color} size={26} />
+                <MaterialCommunityIcons name="home" color={color} size={24} />
               ),
             }}
           />
@@ -42,7 +43,7 @@ const App = () => {
                 <MaterialCommunityIcons
                   name="hospital-box"
                   color={color}
-                  size={26}
+                  size={24}
                 />
               ),
             }}
@@ -53,7 +54,7 @@ const App = () => {
             options={{
               title: 'Settings',
               tabBarIcon: ({ color }) => (
-                <MaterialCommunityIcons name="cog" color={color} size={26} />
+                <MaterialCommunityIcons name="cog" color={color} size={24} />
               ),
             }}
           />

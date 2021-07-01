@@ -3,7 +3,7 @@ import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import ChecklistItem from '../models/ChecklistItem';
 import { result } from '../models/Result';
 import SkillSearchResult from '../models/SkillSearchResult';
-import { hasAny, unixDateNow, unixDateToday } from '../utils';
+import { guardedTrim, hasAny, unixDateNow, unixDateToday } from '../utils';
 import Database from './Database';
 import { DbInit } from './DbInit';
 
@@ -154,11 +154,35 @@ const saveMood = async (mood: number) => {
   }
 };
 
+const saveGratitude = async (lines: string[]) => {
+  try {
+    const db = await getDatabase();
+    const now = unixDateNow();
+
+    await db.transaction(tx => {
+      for (const line of lines) {
+        const trimmed = guardedTrim(line);
+        if (trimmed.length > 0) {
+          tx.executeSql('INSERT INTO gratitude_log(date, text) VALUES (?, ?)', [
+            now,
+            trimmed,
+          ]);
+        }
+      }
+    });
+
+    return result(true);
+  } catch (ex) {
+    return result(false, ex);
+  }
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
   rebuild,
   recordChecklistCheck,
+  saveGratitude,
   saveMood,
 };
 

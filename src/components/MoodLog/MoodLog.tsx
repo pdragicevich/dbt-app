@@ -39,8 +39,12 @@ const Moods: Mood[] = [
 const MoodLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
   const db = useDatabase();
   async function setMood(moodDef: Mood) {
-    await db.saveMood(moodDef.value);
-    onDismiss(moodDef.message);
+    const result = await db.saveMood(moodDef.value);
+    if (result.success) {
+      onDismiss(moodDef.message);
+    } else {
+      onDismiss('There was a problem :(');
+    }
   }
   return (
     <Portal>

@@ -8,6 +8,7 @@ interface Database {
   recordChecklistCheck: (_arg0: number, _arg1: boolean) => Promise<Result>;
   rebuild: () => Promise<Result>;
   saveMood: (_arg0: number) => Promise<Result>;
+  saveGratitude: (_arg0: string[]) => Promise<Result>;
 }
 
 export default Database;
