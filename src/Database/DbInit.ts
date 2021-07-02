@@ -7,6 +7,7 @@ const CreateTableVersionSQL = `CREATE TABLE IF NOT EXISTS Version(
 
 const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
     id INTEGER PRIMARY KEY,
+    area TEXT NOT NULL,
     section TEXT NOT NULL,
     title TEXT NOT NULL,
     content TEXT NOT NULL);`;

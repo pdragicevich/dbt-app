@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import { Portal, Searchbar } from 'react-native-paper';
-import { useDatabase } from '../../DbContext';
+import { useDatabase } from '../../AppContext';
 import SkillSearchResult from '../../models/SkillSearchResult';
 import { guardedTrim, hasAny } from '../../utils';
 import _debounce from 'lodash.debounce';

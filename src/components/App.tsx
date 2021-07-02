@@ -5,8 +5,9 @@ import AppHeader from './AppHeader';
 import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import DbContext from '../DbContext';
+import AppContext from '../AppContext';
 import sqlDb from '../Database/SQLDatabase';
+import inMemorySettings from '../AppSettings/InMemorySettings';
 import HelpScreen from './HelpScreen/HelpScreen';
 
 type TabParamList = {
@@ -20,7 +21,8 @@ const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 const App = () => {
   return (
-    <DbContext.Provider value={sqlDb}>
+    <AppContext.Provider
+      value={{ database: sqlDb, settings: inMemorySettings }}>
       <AppHeader />
       <NavigationContainer>
         <Tab.Navigator shifting={false}>
@@ -60,7 +62,7 @@ const App = () => {
           />
         </Tab.Navigator>
       </NavigationContainer>
-    </DbContext.Provider>
+    </AppContext.Provider>
   );
 };
 

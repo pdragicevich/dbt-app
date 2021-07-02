@@ -1,15 +1,37 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { Title, Button, TextInput, Portal, Dialog } from 'react-native-paper';
-import { useDatabase } from '../../DbContext';
+import { useDatabase, useSettings } from '../../AppContext';
+
+const LogLine = ({
+  placeholder,
+  initialValue,
+  onChangeText,
+}: {
+  placeholder: string;
+  initialValue: string;
+  onChangeText: (text: string) => void;
+}) => {
+  const [value, setValue] = useState(initialValue);
+  function handleChanged(text: string) {
+    setValue(text);
+    onChangeText(text);
+  }
+  return (
+    <TextInput
+      placeholder={placeholder}
+      value={value}
+      onChangeText={handleChanged}
+    />
+  );
+};
 
 const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
   const db = useDatabase();
-  const [logLines, setLogLines] = useState<string[]>(['', '', '', '', '']);
+  const settings = useSettings();
+  const logLines = useRef(Array(settings.gratitudeBatch).fill('')).current;
 
   function setLogLine(index: number, value: string) {
-    const newLogLines = [...logLines];
-    newLogLines[index] = value;
-    setLogLines(newLogLines);
+    logLines[index] = value;
   }
 
   async function saveGratitudeLog() {
@@ -28,10 +50,10 @@ const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
         <Dialog.Content>
           <Title>Gratitude log</Title>
           {logLines.map((v, i) => (
-            <TextInput
+            <LogLine
               key={i}
               placeholder={'Entry ' + (i + 1)}
-              value={v}
+              initialValue={v}
               onChangeText={text => setLogLine(i, text)}
             />
           ))}

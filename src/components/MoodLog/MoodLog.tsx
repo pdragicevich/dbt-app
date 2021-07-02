@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dialog, List, Portal } from 'react-native-paper';
-import { useDatabase } from '../../DbContext';
+import { useDatabase } from '../../AppContext';
 import Mood from '../../models/Mood';
 
 const Moods: Mood[] = [

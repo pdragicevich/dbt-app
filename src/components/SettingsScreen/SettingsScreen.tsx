@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Title, Snackbar } from 'react-native-paper';
-import { useDatabase } from '../../DbContext';
+import { useDatabase } from '../../AppContext';
 
 const SettingsScreen = () => {
   const db = useDatabase();
