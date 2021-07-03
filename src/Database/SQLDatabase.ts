@@ -2,6 +2,7 @@ import { AppState, AppStateStatus } from 'react-native';
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import ChecklistItem from '../models/ChecklistItem';
 import { result } from '../models/Result';
+import Skill from '../models/Skill';
 import SkillSearchResult from '../models/SkillSearchResult';
 import { guardedTrim, hasAny, unixDateNow, unixDateToday } from '../utils';
 import Database from './Database';
@@ -58,8 +59,8 @@ function handleAppStateChange(nextAppState: AppStateStatus) {
 }
 
 const findSkill = (searchTerm: string) =>
-  select<SkillSearchResult>('SELECT * FROM skills WHERE title LIKE ?', [
-    `%${searchTerm}%`,
+  select<SkillSearchResult>('SELECT * FROM skills WHERE UPPER(title) LIKE ?', [
+    `%${guardedTrim(searchTerm).toUpperCase()}%`,
   ]);
 
 const getChecklistItems = () =>
@@ -177,6 +178,25 @@ const saveGratitude = async (lines: string[]) => {
   }
 };
 
+const saveSkills = async (skills: Skill[]) => {
+  try {
+    const db = await getDatabase();
+
+    await db.transaction(tx => {
+      for (const skill of skills) {
+        tx.executeSql(
+          'INSERT INTO skills(file_id,area,section,title,summary) VALUES (?,?,?,?,?)',
+          [skill.id, skill.area, skill.section, skill.title, skill.summary],
+        );
+      }
+    });
+
+    return result(true);
+  } catch (ex) {
+    return result(false, ex);
+  }
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
@@ -184,6 +204,7 @@ const sqlDatabase: Database = {
   recordChecklistCheck,
   saveGratitude,
   saveMood,
+  saveSkills,
 };
 
 export default sqlDatabase;

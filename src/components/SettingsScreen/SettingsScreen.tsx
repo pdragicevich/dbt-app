@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Title, Snackbar } from 'react-native-paper';
+import { Button, Title, Snackbar, Portal } from 'react-native-paper';
+import SkillsApi from '../../api/SkillsApi';
 import { useAppContext } from '../../AppContext';
 
 const SettingsScreen = () => {
@@ -26,6 +27,22 @@ const SettingsScreen = () => {
     }
   }
 
+  async function reloadSkills() {
+    let success = false;
+    const skills = await SkillsApi.getSkillsSummary();
+    if (skills.success && skills.data != null) {
+      const dbResult = await db.saveSkills(skills.data);
+      if (dbResult.success) {
+        success = true;
+      }
+    }
+    if (success) {
+      setMessage('Reloaded skills OK!');
+    } else {
+      setMessage('There was a problem doing that!');
+    }
+  }
+
   function onDismissMessage() {
     setMessage('');
   }
@@ -36,9 +53,14 @@ const SettingsScreen = () => {
       <Button icon="alert" mode="contained" onPress={initDb}>
         Re-initialise database
       </Button>
-      <Snackbar visible={!!message} onDismiss={onDismissMessage}>
-        {message}
-      </Snackbar>
+      <Button icon="alert" mode="contained" onPress={reloadSkills}>
+        Reload skills
+      </Button>
+      <Portal>
+        <Snackbar visible={!!message} onDismiss={onDismissMessage}>
+          {message}
+        </Snackbar>
+      </Portal>
     </View>
   );
 };

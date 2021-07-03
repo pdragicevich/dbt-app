@@ -1,6 +1,6 @@
 import React from 'react';
 import { Dialog, List, Portal } from 'react-native-paper';
-import { useDatabase } from '../../AppContext';
+import { useAppContext } from '../../AppContext';
 import Mood from '../../models/Mood';
 
 const Moods: Mood[] = [
@@ -37,7 +37,7 @@ const Moods: Mood[] = [
 ];
 
 const MoodLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
-  const db = useDatabase();
+  const { db } = useAppContext();
   async function setMood(moodDef: Mood) {
     const result = await db.saveMood(moodDef.value);
     if (result.success) {

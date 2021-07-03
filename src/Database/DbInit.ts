@@ -7,10 +7,11 @@ const CreateTableVersionSQL = `CREATE TABLE IF NOT EXISTS Version(
 
 const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
     id INTEGER PRIMARY KEY,
+    file_id TEXT NOT NULL,
     area TEXT NOT NULL,
     section TEXT NOT NULL,
     title TEXT NOT NULL,
-    content TEXT NOT NULL);`;
+    summary TEXT NOT NULL);`;
 
 const CreateTableChecklistSQL = `CREATE TABLE IF NOT EXISTS checklist(
     id INTEGER PRIMARY KEY,
