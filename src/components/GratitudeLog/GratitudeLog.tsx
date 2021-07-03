@@ -1,6 +1,6 @@
 import React, { useRef, useState } from 'react';
 import { Title, Button, TextInput, Portal, Dialog } from 'react-native-paper';
-import { useDatabase, useSettings } from '../../AppContext';
+import { useAppContext } from '../../AppContext';
 
 const LogLine = ({
   placeholder,
@@ -26,8 +26,7 @@ const LogLine = ({
 };
 
 const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
-  const db = useDatabase();
-  const settings = useSettings();
+  const { db, settings, setAppMessage } = useAppContext();
   const logLines = useRef(Array(settings.gratitudeBatch).fill('')).current;
 
   function setLogLine(index: number, value: string) {
@@ -38,6 +37,7 @@ const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
     const result = await db.saveGratitude(logLines);
     if (result.success) {
       onDismiss('Thanks!');
+      setAppMessage('Thanks!');
     } else {
       onDismiss('There was a problem :(');
     }

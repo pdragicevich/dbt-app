@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import { Button, Title, Snackbar } from 'react-native-paper';
-import { useDatabase } from '../../AppContext';
+import { useAppContext } from '../../AppContext';
 
 const SettingsScreen = () => {
-  const db = useDatabase();
+  const { db } = useAppContext();
 
   const [message, setMessage] = useState('');
 

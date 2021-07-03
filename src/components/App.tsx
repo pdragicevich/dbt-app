@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import HomeScreen from './HomeScreen/HomeScreen';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import AppHeader from './AppHeader';
@@ -9,6 +9,7 @@ import AppContext from '../AppContext';
 import sqlDb from '../Database/SQLDatabase';
 import inMemorySettings from '../AppSettings/InMemorySettings';
 import HelpScreen from './HelpScreen/HelpScreen';
+import ScreenLayout from './ScreenLayout';
 
 type TabParamList = {
   Home: undefined;
@@ -20,15 +21,25 @@ type TabParamList = {
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 const App = () => {
+  const [appMessage, setAppMessage] = useState('This is a message');
+
   return (
     <AppContext.Provider
-      value={{ database: sqlDb, settings: inMemorySettings }}>
+      value={{
+        db: sqlDb,
+        settings: inMemorySettings,
+        setAppMessage: setAppMessage,
+      }}>
       <AppHeader />
       <NavigationContainer>
         <Tab.Navigator shifting={false}>
           <Tab.Screen
             name="Home"
-            component={HomeScreen}
+            children={() => (
+              <ScreenLayout appMessage={appMessage}>
+                <HomeScreen />
+              </ScreenLayout>
+            )}
             options={{
               title: 'Home',
               tabBarIcon: ({ color }) => (
@@ -38,7 +49,11 @@ const App = () => {
           />
           <Tab.Screen
             name="Help"
-            component={HelpScreen}
+            children={() => (
+              <ScreenLayout appMessage={appMessage}>
+                <HelpScreen />
+              </ScreenLayout>
+            )}
             options={{
               title: 'Help!',
               tabBarIcon: ({ color }) => (
@@ -52,7 +67,11 @@ const App = () => {
           />
           <Tab.Screen
             name="Settings"
-            component={SettingsScreen}
+            children={() => (
+              <ScreenLayout appMessage={appMessage}>
+                <SettingsScreen />
+              </ScreenLayout>
+            )}
             options={{
               title: 'Settings',
               tabBarIcon: ({ color }) => (
