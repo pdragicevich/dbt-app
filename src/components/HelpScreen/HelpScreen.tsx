@@ -1,10 +1,13 @@
 import React from 'react';
 import { View } from 'react-native';
-import { Text, Title } from 'react-native-paper';
+import { Title } from 'react-native-paper';
+import SkillsBrowser from '../SkillsBrowser/SkillsBrowser';
 
 const HelpScreen = () => (
   <View>
     <Title>Help!</Title>
+
+    <SkillsBrowser />
   </View>
 );
 

@@ -14,6 +14,7 @@ interface Database {
   saveSkills: (_arg0: Skill[]) => Promise<Result>;
   readSettings: () => Promise<DataResult<AppSettings>>;
   getSkillsCount: () => Promise<number>;
+  getSkillsTitles: (_arg0: string[]) => Promise<DataResult<string[]>>;
 }
 
 export default Database;

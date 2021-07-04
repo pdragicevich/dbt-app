@@ -255,6 +255,52 @@ const getSkillsCount = async () => {
   }
 };
 
+const getSkillsTitles = async (breadcrumbs: string[]) => {
+  try {
+    const titles: string[] = [];
+    const db = await getDatabase();
+
+    let results: SQLite.ResultSet[] = [];
+    switch (breadcrumbs.length) {
+      case 0:
+        results = await db.executeSql(
+          'SELECT DISTINCT(area) breadcrumb FROM skills ORDER BY area',
+        );
+        break;
+
+      case 1:
+        results = await db.executeSql(
+          'SELECT DISTINCT(section) breadcrumb FROM skills WHERE area = ? ORDER BY section',
+          breadcrumbs,
+        );
+        break;
+
+      case 2:
+        results = await db.executeSql(
+          'SELECT DISTINCT(title) breadcrumb FROM skills WHERE area = ? AND section = ? ORDER BY title',
+          breadcrumbs,
+        );
+        break;
+
+      default:
+        return dataResult<string[]>(false, titles, 'Invalid breadcrumbs');
+    }
+
+    if (noResults(results)) {
+      return dataResult<string[]>(false, titles, 'No results');
+    }
+
+    const rows = results[0].rows;
+    for (let i = 0; i < rows.length; i++) {
+      titles.push(rows.item(i).breadcrumb);
+    }
+
+    return dataResult<string[]>(true, titles);
+  } catch (ex) {
+    return dataResult<string[]>(false, null, ex);
+  }
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
@@ -265,6 +311,7 @@ const sqlDatabase: Database = {
   saveSkills,
   readSettings,
   getSkillsCount,
+  getSkillsTitles,
 };
 
 export default sqlDatabase;

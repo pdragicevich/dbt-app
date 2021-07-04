@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Dialog, List, Portal, Searchbar, Text } from 'react-native-paper';
+import { List, Portal, Searchbar } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
 import SkillSearchResult from '../../models/SkillSearchResult';
 import { guardedTrim, hasAny } from '../../utils';
 import _debounce from 'lodash.debounce';
+import SkillDetail from '../SkillDetail/SkillDetail';
+import { useEffect } from 'react';
 
 const SkillSearch = ({ onHide }: { onHide: () => void }) => {
   const { db } = useAppContext();
@@ -13,24 +15,25 @@ const SkillSearch = ({ onHide }: { onHide: () => void }) => {
   const [result, setResult] = useState<SkillSearchResult[]>([]);
   const [skill, setSkill] = useState<SkillSearchResult | null>(null);
 
-  function doSearch(str: string) {
-    const trimmed = guardedTrim(str);
-    if (trimmed.length < 1) {
-      onHide();
-    } else {
-      setSearch(str);
-      findSkill(str);
-    }
-  }
+  useEffect(() => {
+    const findSkill = _debounce(str => {
+      if (str.length < 1) {
+        setResult([]);
+      } else {
+        db.findSkill(str)
+          .then(res => {
+            console.log(res);
+            setResult(res);
+          })
+          .catch(() => setResult([]));
+      }
+    }, 500);
+    findSkill(search);
+  }, [db, search]);
 
-  const findSkill = _debounce(str => {
-    db.findSkill(str)
-      .then(res => {
-        console.log(res);
-        setResult(res);
-      })
-      .catch(() => setResult([]));
-  }, 500);
+  function doSearch(str: string) {
+    setSearch(guardedTrim(str));
+  }
 
   return (
     <Portal>
@@ -39,6 +42,7 @@ const SkillSearch = ({ onHide }: { onHide: () => void }) => {
           style={styles.searchbar}
           placeholder="Find a skill"
           onChangeText={doSearch}
+          onIconPress={() => onHide()}
           value={search}
         />
         {hasAny(result) && (
@@ -53,14 +57,7 @@ const SkillSearch = ({ onHide }: { onHide: () => void }) => {
           </View>
         )}
       </View>
-      {skill && (
-        <Dialog visible={true} onDismiss={() => setSkill(null)}>
-          <Dialog.Title>{skill.title}</Dialog.Title>
-          <Dialog.Content>
-            <Text>{skill.summary}</Text>
-          </Dialog.Content>
-        </Dialog>
-      )}
+      {skill && <SkillDetail skill={skill} onDismiss={() => setSkill(null)} />}
     </Portal>
   );
 };
