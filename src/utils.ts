@@ -31,3 +31,14 @@ export function unixDateToday(): number {
   date.setMilliseconds(0);
   return unixDate(date);
 }
+
+export function nowValue() {
+  return new Date().valueOf();
+}
+
+export function firstOrDefault<T>(arr: T[], defaultValue: T | null = null) {
+  if (!hasAny(arr)) {
+    return defaultValue;
+  }
+  return arr[0];
+}

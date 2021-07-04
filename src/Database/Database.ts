@@ -2,6 +2,7 @@ import AppSettings from '../AppSettings/AppSettings';
 import ChecklistItem from '../models/ChecklistItem';
 import Result, { DataResult } from '../models/Result';
 import Skill from '../models/Skill';
+import SkillBrowserResult from '../models/SkillBrowserResult';
 import SkillSearchResult from '../models/SkillSearchResult';
 
 interface Database {
@@ -14,7 +15,11 @@ interface Database {
   saveSkills: (_arg0: Skill[]) => Promise<Result>;
   readSettings: () => Promise<DataResult<AppSettings>>;
   getSkillsCount: () => Promise<number>;
-  getSkillsTitles: (_arg0: string[]) => Promise<DataResult<string[]>>;
+  getSkillsTitles: (
+    _arg0: string[],
+  ) => Promise<DataResult<SkillBrowserResult[]>>;
+  getSkillById: (_arg0: number) => Promise<SkillSearchResult | null>;
+  updateSkillContent: (_arg0: number, _arg1: string) => Promise<Result>;
 }
 
 export default Database;

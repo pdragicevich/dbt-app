@@ -4,8 +4,15 @@ import AppSettings, { defaultSettings } from '../AppSettings/AppSettings';
 import ChecklistItem from '../models/ChecklistItem';
 import { dataResult, result } from '../models/Result';
 import Skill from '../models/Skill';
+import SkillBrowserResult from '../models/SkillBrowserResult';
 import SkillSearchResult from '../models/SkillSearchResult';
-import { guardedTrim, hasAny, unixDateNow, unixDateToday } from '../utils';
+import {
+  firstOrDefault,
+  guardedTrim,
+  hasAny,
+  unixDateNow,
+  unixDateToday,
+} from '../utils';
 import Database from './Database';
 import { DbInit } from './DbInit';
 
@@ -257,7 +264,7 @@ const getSkillsCount = async () => {
 
 const getSkillsTitles = async (breadcrumbs: string[]) => {
   try {
-    const titles: string[] = [];
+    const titles: SkillBrowserResult[] = [];
     const db = await getDatabase();
 
     let results: SQLite.ResultSet[] = [];
@@ -277,27 +284,55 @@ const getSkillsTitles = async (breadcrumbs: string[]) => {
 
       case 2:
         results = await db.executeSql(
-          'SELECT DISTINCT(title) breadcrumb FROM skills WHERE area = ? AND section = ? ORDER BY title',
+          'SELECT id, title breadcrumb FROM skills WHERE area = ? AND section = ? ORDER BY title',
           breadcrumbs,
         );
         break;
 
       default:
-        return dataResult<string[]>(false, titles, 'Invalid breadcrumbs');
+        return dataResult<SkillBrowserResult[]>(
+          false,
+          titles,
+          'Invalid breadcrumbs',
+        );
     }
 
     if (noResults(results)) {
-      return dataResult<string[]>(false, titles, 'No results');
+      return dataResult<SkillBrowserResult[]>(false, titles, 'No results');
     }
 
     const rows = results[0].rows;
     for (let i = 0; i < rows.length; i++) {
-      titles.push(rows.item(i).breadcrumb);
+      titles.push({
+        id: rows.item(i).id || -1,
+        label: rows.item(i).breadcrumb,
+      });
     }
 
-    return dataResult<string[]>(true, titles);
+    return dataResult<SkillBrowserResult[]>(true, titles);
   } catch (ex) {
-    return dataResult<string[]>(false, null, ex);
+    return dataResult<SkillBrowserResult[]>(false, null, ex);
+  }
+};
+
+const getSkillById = async (id: number) => {
+  const rows = await select<SkillSearchResult>(
+    'SELECT * FROM skills WHERE id = ?',
+    [id],
+  );
+  return firstOrDefault<SkillSearchResult>(rows);
+};
+
+const updateSkillContent = async (id: number, content: string) => {
+  try {
+    const db = await getDatabase();
+    await db.executeSql('UPDATE skills SET contents = ? WHERE id = ?', [
+      content,
+      id,
+    ]);
+    return result(true);
+  } catch (ex) {
+    return result(false, ex);
   }
 };
 
@@ -312,6 +347,8 @@ const sqlDatabase: Database = {
   readSettings,
   getSkillsCount,
   getSkillsTitles,
+  getSkillById,
+  updateSkillContent,
 };
 
 export default sqlDatabase;

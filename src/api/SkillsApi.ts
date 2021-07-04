@@ -21,12 +21,12 @@ const getSkillDetail = async (settings: AppSettings, fileId: string) => {
     const url = settings.skillsApiUrl + '/Skills/' + fileId;
     const response = await fetch(url);
     if (!response.ok) {
-      return Promise.resolve(dataResult(false, null, 'response not ok'));
+      return dataResult(false, null, 'response not ok');
     }
     const data = (await response.json()) as Skill;
     return dataResult(true, data);
   } catch (ex) {
-    return Promise.resolve(dataResult(false, null, ex));
+    return dataResult(false, null, ex);
   }
 };
 
