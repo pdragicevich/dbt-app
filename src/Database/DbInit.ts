@@ -11,7 +11,8 @@ const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
     area TEXT NOT NULL,
     section TEXT NOT NULL,
     title TEXT NOT NULL,
-    summary TEXT NOT NULL);`;
+    summary TEXT NOT NULL,
+    contents TEXT);`;
 
 const CreateTableChecklistSQL = `CREATE TABLE IF NOT EXISTS checklist(
     id INTEGER PRIMARY KEY,

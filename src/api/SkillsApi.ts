@@ -5,7 +5,6 @@ import { dataResult } from '../models/Result';
 const getSkillsSummary = async () => {
   try {
     const url = inMemorySettings.skillsApiUrl + '/Skills';
-    console.log('getSkillsSummary url', url);
     const response = await fetch(url);
     if (!response.ok) {
       return Promise.resolve(dataResult(false, [], 'response not ok'));
@@ -17,6 +16,20 @@ const getSkillsSummary = async () => {
   }
 };
 
-const SkillsApi = { getSkillsSummary };
+const getSkillDetail = async (fileId: string) => {
+  try {
+    const url = inMemorySettings.skillsApiUrl + '/Skills/' + fileId;
+    const response = await fetch(url);
+    if (!response.ok) {
+      return Promise.resolve(dataResult(false, null, 'response not ok'));
+    }
+    const data = (await response.json()) as Skill;
+    return dataResult(true, data);
+  } catch (ex) {
+    return Promise.resolve(dataResult(false, null, ex));
+  }
+};
+
+const SkillsApi = { getSkillDetail, getSkillsSummary };
 
 export default SkillsApi;

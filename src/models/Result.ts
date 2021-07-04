@@ -36,7 +36,7 @@ interface Result {
 }
 
 export interface DataResult<T> extends Result {
-  data?: T;
+  data?: T | null;
 }
 
 export default Result;
