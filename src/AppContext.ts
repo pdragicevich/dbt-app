@@ -6,6 +6,7 @@ interface AppContextData {
   db: Database;
   settings: AppSettings;
   setAppMessage: (msg: string) => void;
+  updateSettings: (settings: Partial<AppSettings>) => void;
 }
 
 const AppContext = React.createContext<AppContextData>({} as AppContextData);

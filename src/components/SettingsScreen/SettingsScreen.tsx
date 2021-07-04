@@ -1,11 +1,17 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { Button, Title, Snackbar, Portal } from 'react-native-paper';
+import {
+  Button,
+  Title,
+  Snackbar,
+  Portal,
+  Subheading,
+} from 'react-native-paper';
 import SkillsApi from '../../api/SkillsApi';
 import { useAppContext } from '../../AppContext';
 
 const SettingsScreen = () => {
-  const { db } = useAppContext();
+  const { db, settings } = useAppContext();
 
   const [message, setMessage] = useState('');
 
@@ -29,7 +35,7 @@ const SettingsScreen = () => {
 
   async function reloadSkills() {
     let success = false;
-    const skills = await SkillsApi.getSkillsSummary();
+    const skills = await SkillsApi.getSkillsSummary(settings);
     if (skills.success && skills.data != null) {
       const dbResult = await db.saveSkills(skills.data);
       if (dbResult.success) {
@@ -50,6 +56,7 @@ const SettingsScreen = () => {
   return (
     <View>
       <Title>Settings</Title>
+      <Subheading>Danger!</Subheading>
       <Button icon="alert" mode="contained" onPress={initDb}>
         Re-initialise database
       </Button>

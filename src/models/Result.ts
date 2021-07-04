@@ -15,7 +15,7 @@ export function result(
 
 export function dataResult<T>(
   success: boolean,
-  data: T,
+  data: T | null,
   ..._args: Array<string | Error>
 ): DataResult<T> {
   const newObj: DataResult<T> = { success, data };

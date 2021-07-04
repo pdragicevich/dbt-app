@@ -1,7 +1,8 @@
 import { AppState, AppStateStatus } from 'react-native';
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
+import AppSettings, { defaultSettings } from '../AppSettings/AppSettings';
 import ChecklistItem from '../models/ChecklistItem';
-import { result } from '../models/Result';
+import { dataResult, result } from '../models/Result';
 import Skill from '../models/Skill';
 import SkillSearchResult from '../models/SkillSearchResult';
 import { guardedTrim, hasAny, unixDateNow, unixDateToday } from '../utils';
@@ -58,6 +59,11 @@ function handleAppStateChange(nextAppState: AppStateStatus) {
   appState = nextAppState;
 }
 
+/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+function noResults(results: any) {
+  return !hasAny(results) || !hasAny(results[0].rows);
+}
+
 const findSkill = (searchTerm: string) =>
   select<SkillSearchResult>('SELECT * FROM skills WHERE UPPER(title) LIKE ?', [
     `%${guardedTrim(searchTerm).toUpperCase()}%`,
@@ -87,7 +93,7 @@ async function select<TResult>(
   const db = await getDatabase();
   const results = await db.executeSql(sql, params);
 
-  if (!hasAny(results) || !hasAny(results[0].rows)) {
+  if (noResults(results)) {
     return returnedRows;
   }
 
@@ -197,6 +203,58 @@ const saveSkills = async (skills: Skill[]) => {
   }
 };
 
+interface SettingsRow {
+  key: string;
+  value: string;
+}
+
+const readSettings = async () => {
+  try {
+    const settings: AppSettings = { ...defaultSettings };
+    const db = await getDatabase();
+    const results = await db.executeSql('SELECT key, value FROM settings');
+
+    if (noResults(results)) {
+      return dataResult<AppSettings>(true, settings);
+    }
+
+    const rows = results[0].rows;
+
+    for (let i = 0; i < rows.length; i++) {
+      const row = rows.item(i) as SettingsRow;
+
+      switch (row.key) {
+        case 'gratitudeBatch':
+          settings.gratitudeBatch = parseInt(row.value, 10);
+          break;
+
+        case 'skillsApiUrl':
+          settings.skillsApiUrl = guardedTrim(row.value);
+          break;
+      }
+    }
+
+    return dataResult<AppSettings>(true, settings);
+  } catch (ex) {
+    return dataResult<AppSettings>(false, null, ex);
+  }
+};
+
+const getSkillsCount = async () => {
+  try {
+    const db = await getDatabase();
+    const results = await db.executeSql(
+      'SELECT COUNT(id) skillsCount FROM skills',
+    );
+    if (noResults(results)) {
+      return 0;
+    }
+    return parseInt(results[0].rows.item(0).skillsCount, 10);
+  } catch (ex) {
+    return 0;
+  }
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
@@ -205,6 +263,8 @@ const sqlDatabase: Database = {
   saveGratitude,
   saveMood,
   saveSkills,
+  readSettings,
+  getSkillsCount,
 };
 
 export default sqlDatabase;

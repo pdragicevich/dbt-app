@@ -1,10 +1,10 @@
 import Skill from '../models/Skill';
-import inMemorySettings from '../AppSettings/InMemorySettings';
 import { dataResult } from '../models/Result';
+import AppSettings from '../AppSettings/AppSettings';
 
-const getSkillsSummary = async () => {
+const getSkillsSummary = async (settings: AppSettings) => {
   try {
-    const url = inMemorySettings.skillsApiUrl + '/Skills';
+    const url = settings.skillsApiUrl + '/Skills';
     const response = await fetch(url);
     if (!response.ok) {
       return Promise.resolve(dataResult(false, [], 'response not ok'));
@@ -16,9 +16,9 @@ const getSkillsSummary = async () => {
   }
 };
 
-const getSkillDetail = async (fileId: string) => {
+const getSkillDetail = async (settings: AppSettings, fileId: string) => {
   try {
-    const url = inMemorySettings.skillsApiUrl + '/Skills/' + fileId;
+    const url = settings.skillsApiUrl + '/Skills/' + fileId;
     const response = await fetch(url);
     if (!response.ok) {
       return Promise.resolve(dataResult(false, null, 'response not ok'));

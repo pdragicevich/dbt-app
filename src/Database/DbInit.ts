@@ -47,8 +47,14 @@ const CreateTableGratitudeLogSQL = `CREATE TABLE IF NOT EXISTS gratitude_log(
     date INTEGER NOT NULL,
     text TEXT NOT NULL);`;
 
+const CreateTableSettingsSQL = `CREATE TABLE IF NOT EXISTS settings(
+    id INTEGER PRIMARY KEY,
+    key TEXT NOT NULL,
+    value TEXT NOT NULL);`;
+
 const TableSQL = [
   CreateTableVersionSQL,
+  CreateTableSettingsSQL,
   CreateSkillsTableSQL,
   CreateTableChecklistSQL,
   CreateTableChecklistLogSQL,
