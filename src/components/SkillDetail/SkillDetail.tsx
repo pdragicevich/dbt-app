@@ -4,6 +4,7 @@ import { Dialog, Portal, Text } from 'react-native-paper';
 import SkillsApi from '../../api/SkillsApi';
 import { useAppContext } from '../../AppContext';
 import SkillSearchResult from '../../models/SkillSearchResult';
+import Markdown from 'react-native-markdown-display';
 
 const SkillDetail = ({
   skill,
@@ -39,7 +40,8 @@ const SkillDetail = ({
       <Dialog visible={true} onDismiss={onDismiss}>
         <Dialog.Title>{skillDetail.title}</Dialog.Title>
         <Dialog.Content>
-          <Text>{skillDetail.contents || skillDetail.summary}</Text>
+          {!skillDetail.contents && <Text>{skillDetail.summary}</Text>}
+          {skillDetail.contents && <Markdown>{skillDetail.contents}</Markdown>}
         </Dialog.Content>
       </Dialog>
     </Portal>

@@ -1,6 +1,9 @@
 import React, { useRef, useState } from 'react';
+import { useEffect } from 'react';
 import { Title, Button, TextInput, Portal, Dialog } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
+import LogDef from '../../models/LogDef';
+import LogProps from '../../models/LogProps';
 
 const LogLine = ({
   placeholder,
@@ -25,16 +28,30 @@ const LogLine = ({
   );
 };
 
-const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
+const TextLog = ({ logId, onDismiss }: LogProps) => {
   const { db, settings, setAppMessage } = useAppContext();
-  const logLines = useRef(Array(settings.gratitudeBatch).fill('')).current;
+  const logLines = useRef(Array(settings.logBatch).fill('')).current;
+  const [logDef, setLogDef] = useState<LogDef | null>(null);
+
+  useEffect(() => {
+    async function initTextLog() {
+      const row = await db.readLogDef(logId);
+      if (row != null) {
+        setLogDef(row);
+      } else {
+        onDismiss('Problem loading text log details!');
+      }
+    }
+    initTextLog();
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, []);
 
   function setLogLine(index: number, value: string) {
     logLines[index] = value;
   }
 
-  async function saveGratitudeLog() {
-    const result = await db.saveGratitude(logLines);
+  async function saveTextLog() {
+    const result = await db.saveTextLog(logId, logLines);
     if (result.success) {
       onDismiss('Thanks!');
       setAppMessage('Thanks!');
@@ -45,10 +62,10 @@ const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
 
   return (
     <Portal>
-      <Dialog visible={true} onDismiss={() => onDismiss('')}>
-        <Dialog.Title>What are you grateful for?</Dialog.Title>
+      <Dialog visible={logDef != null} onDismiss={() => onDismiss('')}>
+        <Dialog.Title>{logDef?.title}</Dialog.Title>
         <Dialog.Content>
-          <Title>Gratitude log</Title>
+          <Title>{logDef?.question}</Title>
           {logLines.map((v, i) => (
             <LogLine
               key={i}
@@ -57,7 +74,7 @@ const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
               onChangeText={text => setLogLine(i, text)}
             />
           ))}
-          <Button mode="contained" onPress={saveGratitudeLog}>
+          <Button mode="contained" onPress={saveTextLog}>
             Save
           </Button>
         </Dialog.Content>
@@ -66,4 +83,4 @@ const GratitudeLog = ({ onDismiss }: { onDismiss: (msg: string) => void }) => {
   );
 };
 
-export default GratitudeLog;
+export default TextLog;

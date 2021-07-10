@@ -1,10 +1,10 @@
 interface AppSettings {
-  gratitudeBatch: number;
+  logBatch: number;
   skillsApiUrl: string;
 }
 
 export const defaultSettings: AppSettings = {
-  gratitudeBatch: 3,
+  logBatch: 3,
   skillsApiUrl: 'http://192.168.162.200:5000',
 };
 

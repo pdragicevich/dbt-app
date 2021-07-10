@@ -2,6 +2,8 @@ import { AppState, AppStateStatus } from 'react-native';
 import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import AppSettings, { defaultSettings } from '../AppSettings/AppSettings';
 import ChecklistItem from '../models/ChecklistItem';
+import LogDef from '../models/LogDef';
+import LogItem from '../models/LogItem';
 import { dataResult, result } from '../models/Result';
 import Skill from '../models/Skill';
 import SkillBrowserResult from '../models/SkillBrowserResult';
@@ -153,22 +155,22 @@ const recordChecklistCheck = async (id: number, checked: boolean) => {
   }
 };
 
-const saveMood = async (mood: number) => {
+const saveOptionLog = async (logId: number, value: number) => {
   try {
     const db = await getDatabase();
     const now = unixDateNow();
 
-    await db.executeSql('INSERT INTO mood_log(logged,mood) VALUES (?,?)', [
-      now,
-      mood,
-    ]);
+    await db.executeSql(
+      'INSERT INTO option_log(log_id,logged,value) VALUES (?,?,?)',
+      [logId, now, value],
+    );
     return result(true);
   } catch (ex) {
     return result(false, ex);
   }
 };
 
-const saveGratitude = async (lines: string[]) => {
+const saveTextLog = async (logId: number, lines: string[]) => {
   try {
     const db = await getDatabase();
     const now = unixDateNow();
@@ -177,10 +179,10 @@ const saveGratitude = async (lines: string[]) => {
       for (const line of lines) {
         const trimmed = guardedTrim(line);
         if (trimmed.length > 0) {
-          tx.executeSql('INSERT INTO gratitude_log(date, text) VALUES (?, ?)', [
-            now,
-            trimmed,
-          ]);
+          tx.executeSql(
+            'INSERT INTO text_log(log_id, date, text) VALUES (?, ?, ?)',
+            [logId, now, trimmed],
+          );
         }
       }
     });
@@ -231,8 +233,8 @@ const readSettings = async () => {
       const row = rows.item(i) as SettingsRow;
 
       switch (row.key) {
-        case 'gratitudeBatch':
-          settings.gratitudeBatch = parseInt(row.value, 10);
+        case 'logBatch':
+          settings.logBatch = parseInt(row.value, 10);
           break;
 
         case 'skillsApiUrl':
@@ -336,18 +338,28 @@ const updateSkillContent = async (id: number, content: string) => {
   }
 };
 
+const readLogDef = async (id: number) => {
+  const rows = await select<LogDef>('SELECT * FROM log_def WHERE id = ?', [id]);
+  return firstOrDefault<LogDef>(rows);
+};
+
+const getOptionLogItems = (logId: number) =>
+  select<LogItem>('SELECT * FROM option_log_item WHERE log_id = ?', [logId]);
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
-  rebuild,
-  recordChecklistCheck,
-  saveGratitude,
-  saveMood,
-  saveSkills,
-  readSettings,
+  getOptionLogItems,
+  getSkillById,
   getSkillsCount,
   getSkillsTitles,
-  getSkillById,
+  readLogDef,
+  readSettings,
+  rebuild,
+  recordChecklistCheck,
+  saveOptionLog,
+  saveSkills,
+  saveTextLog,
   updateSkillContent,
 };
 

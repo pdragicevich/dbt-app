@@ -37,13 +37,32 @@ const CreateTableChecklistLogSQL = `CREATE TABLE IF NOT EXISTS checklist_log(
     checklist_id INTEGER,
     logged INTEGER NOT NULL);`;
 
-const CreateTableMoodLogSQL = `CREATE TABLE IF NOT EXISTS mood_log(
+const CreateTableLogDefinitionSQL = `CREATE TABLE IF NOT EXISTS log_def(
     id INTEGER PRIMARY KEY,
-    logged INTEGER NOT NULL,
-    mood INTEGER NOT NULL);`;
+    type INTEGER NOT NULL,
+    name TEXT NOT NULL,
+    title TEXT NOT NULL,
+    question TEXT NOT NULL,
+    message TEXT,
+    icon TEXT);`;
 
-const CreateTableGratitudeLogSQL = `CREATE TABLE IF NOT EXISTS gratitude_log(
+const CreateTableOptionLogSQL = `CREATE TABLE IF NOT EXISTS option_log(
     id INTEGER PRIMARY KEY,
+    log_id INTEGER NOT NULL,
+    logged INTEGER NOT NULL,
+    value INTEGER NOT NULL);`;
+
+const CreateTableOptionLogItemSQL = `CREATE TABLE IF NOT EXISTS option_log_item(
+    id INTEGER PRIMARY KEY,
+    log_id INTEGER NOT NULL,
+    label TEXT NOT NULL,
+    value INTEGER NOT NULL,
+    message TEXT NOT NULL,
+    icon TEXT)`;
+
+const CreateTableTextLogSQL = `CREATE TABLE IF NOT EXISTS text_log(
+    id INTEGER PRIMARY KEY,
+    log_id INTEGER NOT NULL,
     date INTEGER NOT NULL,
     text TEXT NOT NULL);`;
 
@@ -52,14 +71,33 @@ const CreateTableSettingsSQL = `CREATE TABLE IF NOT EXISTS settings(
     key TEXT NOT NULL,
     value TEXT NOT NULL);`;
 
+// (0, 'depression', 'Depression Symptoms', 'How is your depression?', 'emoticon-neutral-outline'),
+// (0, 'anxiety', 'Anxiety Symptoms', 'How is your anxiety?', 'emoticon-neutral-outline'),
+
+const InitLogDefSQL = `INSERT INTO log_def(id,type,name,title,question,message,icon)
+   VALUES
+    (1, 0, 'mood', 'Mood Log', 'How are you feeling?', 'Thanks', 'emoticon-happy-outline'),
+    (2, 1, 'gratitude', 'Gratitude Log', 'What are you grateful for?', 'Thanks', 'human-handsup'),
+    (3, 1, 'self-esteem-boost', 'Self Esteem', 'List some of your good qualities?', 'Thanks', 'human-handsup');`;
+
+const InitOptionItemSQL = `INSERT INTO option_log_item(log_id,label,value,message,icon)
+    VALUES
+    (1, 'Very happy', 5, 'So good!', 'emoticon-excited-outline'),
+    (1, 'Mildly happy', 4, 'Happy days!', 'emoticon-happy-outline'),
+    (1, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
+    (1, 'Not so good', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
+    (1, 'Unhappy', 1, 'Hope things pick up soon.', 'emoticon-frown-outline');`;
+
 const TableSQL = [
   CreateTableVersionSQL,
   CreateTableSettingsSQL,
   CreateSkillsTableSQL,
   CreateTableChecklistSQL,
   CreateTableChecklistLogSQL,
-  CreateTableMoodLogSQL,
-  CreateTableGratitudeLogSQL,
+  CreateTableLogDefinitionSQL,
+  CreateTableOptionLogSQL,
+  CreateTableOptionLogItemSQL,
+  CreateTableTextLogSQL,
 ];
 
 import SQLite from 'react-native-sqlite-storage';
@@ -95,10 +133,12 @@ export class DbInit {
   // Perform initial setup of the database tables
   private createTables(tx: SQLite.Transaction) {
     // DANGER! For dev only
+    /*
     const dropAllTables = false;
     if (dropAllTables) {
-      tx.executeSql('DROP TABLE IF EXISTS mood_log;');
+
     }
+    */
 
     for (const sql of TableSQL) {
       tx.executeSql(sql);
@@ -133,6 +173,8 @@ export class DbInit {
     console.log('Running pre-version 1 DB inserts');
     // Make schema changes
     transaction.executeSql(InitChecklistSQL);
+    transaction.executeSql(InitLogDefSQL);
+    transaction.executeSql(InitOptionItemSQL);
     // Lastly, update the database version
     transaction.executeSql('INSERT INTO Version (version) VALUES (1);');
   }

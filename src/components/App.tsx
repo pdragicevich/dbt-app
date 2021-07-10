@@ -38,7 +38,6 @@ const App = () => {
       }
       setAppMessage('Loading skills');
       const skillsCount = await sqlDb.getSkillsCount();
-      console.log('skillsCount', skillsCount);
       if (skillsCount < 1) {
         const skillsResult = await SkillsApi.getSkillsSummary(settings);
         if (skillsResult.success && skillsResult.data != null) {
