@@ -198,6 +198,7 @@ const saveSkills = async (skills: Skill[]) => {
     const db = await getDatabase();
 
     await db.transaction(tx => {
+      tx.executeSql('DELETE FROM skills');
       for (const skill of skills) {
         tx.executeSql(
           'INSERT INTO skills(file_id,area,section,title,summary) VALUES (?,?,?,?,?)',
@@ -346,6 +347,9 @@ const readLogDef = async (id: number) => {
 const getOptionLogItems = (logId: number) =>
   select<LogItem>('SELECT * FROM option_log_item WHERE log_id = ?', [logId]);
 
+const readLogDefs = async () =>
+  select<LogDef>('SELECT * FROM log_def ORDER BY id');
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
@@ -354,6 +358,7 @@ const sqlDatabase: Database = {
   getSkillsCount,
   getSkillsTitles,
   readLogDef,
+  readLogDefs,
   readSettings,
   rebuild,
   recordChecklistCheck,

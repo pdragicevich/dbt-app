@@ -13,10 +13,12 @@ import ScreenLayout from './ScreenLayout';
 import LoadingScreen from './LoadingScreen';
 import { useEffect } from 'react';
 import SkillsApi from '../api/SkillsApi';
+import SmileScreen from './SmileScreen/SmileScreen';
 
 type TabParamList = {
   Home: undefined;
   Help: undefined;
+  Smile: undefined;
   Settings: undefined;
 };
 
@@ -100,6 +102,24 @@ const App = () => {
                   tabBarIcon: ({ color }) => (
                     <MaterialCommunityIcons
                       name="hospital-box"
+                      color={color}
+                      size={24}
+                    />
+                  ),
+                }}
+              />
+              <Tab.Screen
+                name="Smile"
+                children={() => (
+                  <ScreenLayout appMessage={appMessage}>
+                    <SmileScreen />
+                  </ScreenLayout>
+                )}
+                options={{
+                  title: 'Smile',
+                  tabBarIcon: ({ color }) => (
+                    <MaterialCommunityIcons
+                      name="emoticon-happy-outline"
                       color={color}
                       size={24}
                     />

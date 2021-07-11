@@ -5,7 +5,7 @@ interface AppSettings {
 
 export const defaultSettings: AppSettings = {
   logBatch: 3,
-  skillsApiUrl: 'http://192.168.162.200:5000',
+  skillsApiUrl: 'https://skillsapi.albemuth.net',
 };
 
 export default AppSettings;

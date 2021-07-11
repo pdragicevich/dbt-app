@@ -17,6 +17,7 @@ interface Database {
     _arg0: string[],
   ) => Promise<DataResult<SkillBrowserResult[]>>;
   readLogDef: (_arg0: number) => Promise<LogDef | null>;
+  readLogDefs: () => Promise<LogDef[]>;
   readSettings: () => Promise<DataResult<AppSettings>>;
   rebuild: () => Promise<Result>;
   recordChecklistCheck: (_arg0: number, _arg1: boolean) => Promise<Result>;
