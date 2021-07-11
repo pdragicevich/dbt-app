@@ -14,6 +14,8 @@ import LoadingScreen from './LoadingScreen';
 import { useEffect } from 'react';
 import SkillsApi from '../api/SkillsApi';
 import SmileScreen from './SmileScreen/SmileScreen';
+import { Provider as PaperProvider } from 'react-native-paper';
+import theme from '../theme';
 
 type TabParamList = {
   Home: undefined;
@@ -66,88 +68,90 @@ const App = () => {
         setAppMessage,
         updateSettings,
       }}>
-      {loading && <LoadingScreen progressMessage={appMessage} />}
-      {!loading && (
-        <>
-          <AppHeader />
-          <NavigationContainer>
-            <Tab.Navigator shifting={false}>
-              <Tab.Screen
-                name="Home"
-                children={() => (
-                  <ScreenLayout appMessage={appMessage}>
-                    <HomeScreen />
-                  </ScreenLayout>
-                )}
-                options={{
-                  title: 'Home',
-                  tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons
-                      name="home"
-                      color={color}
-                      size={24}
-                    />
-                  ),
-                }}
-              />
-              <Tab.Screen
-                name="Help"
-                children={() => (
-                  <ScreenLayout appMessage={appMessage}>
-                    <HelpScreen />
-                  </ScreenLayout>
-                )}
-                options={{
-                  title: 'Help!',
-                  tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons
-                      name="hospital-box"
-                      color={color}
-                      size={24}
-                    />
-                  ),
-                }}
-              />
-              <Tab.Screen
-                name="Smile"
-                children={() => (
-                  <ScreenLayout appMessage={appMessage}>
-                    <SmileScreen />
-                  </ScreenLayout>
-                )}
-                options={{
-                  title: 'Smile',
-                  tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons
-                      name="emoticon-happy-outline"
-                      color={color}
-                      size={24}
-                    />
-                  ),
-                }}
-              />
-              <Tab.Screen
-                name="Settings"
-                children={() => (
-                  <ScreenLayout appMessage={appMessage}>
-                    <SettingsScreen />
-                  </ScreenLayout>
-                )}
-                options={{
-                  title: 'Settings',
-                  tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons
-                      name="cog"
-                      color={color}
-                      size={24}
-                    />
-                  ),
-                }}
-              />
-            </Tab.Navigator>
-          </NavigationContainer>
-        </>
-      )}
+      <PaperProvider theme={theme}>
+        {loading && <LoadingScreen progressMessage={appMessage} />}
+        {!loading && (
+          <>
+            <AppHeader />
+            <NavigationContainer>
+              <Tab.Navigator shifting={false}>
+                <Tab.Screen
+                  name="Home"
+                  children={() => (
+                    <ScreenLayout appMessage={appMessage}>
+                      <HomeScreen />
+                    </ScreenLayout>
+                  )}
+                  options={{
+                    title: 'Home',
+                    tabBarIcon: ({ color }) => (
+                      <MaterialCommunityIcons
+                        name="home"
+                        color={color}
+                        size={24}
+                      />
+                    ),
+                  }}
+                />
+                <Tab.Screen
+                  name="Help"
+                  children={() => (
+                    <ScreenLayout appMessage={appMessage}>
+                      <HelpScreen />
+                    </ScreenLayout>
+                  )}
+                  options={{
+                    title: 'Help!',
+                    tabBarIcon: ({ color }) => (
+                      <MaterialCommunityIcons
+                        name="hospital-box"
+                        color={color}
+                        size={24}
+                      />
+                    ),
+                  }}
+                />
+                <Tab.Screen
+                  name="Smile"
+                  children={() => (
+                    <ScreenLayout appMessage={appMessage}>
+                      <SmileScreen />
+                    </ScreenLayout>
+                  )}
+                  options={{
+                    title: 'Smile',
+                    tabBarIcon: ({ color }) => (
+                      <MaterialCommunityIcons
+                        name="emoticon-happy-outline"
+                        color={color}
+                        size={24}
+                      />
+                    ),
+                  }}
+                />
+                <Tab.Screen
+                  name="Settings"
+                  children={() => (
+                    <ScreenLayout appMessage={appMessage}>
+                      <SettingsScreen />
+                    </ScreenLayout>
+                  )}
+                  options={{
+                    title: 'Settings',
+                    tabBarIcon: ({ color }) => (
+                      <MaterialCommunityIcons
+                        name="cog"
+                        color={color}
+                        size={24}
+                      />
+                    ),
+                  }}
+                />
+              </Tab.Navigator>
+            </NavigationContainer>
+          </>
+        )}
+      </PaperProvider>
     </AppContext.Provider>
   );
 };

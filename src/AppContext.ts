@@ -23,7 +23,10 @@ export function useAppContext(): AppContextData {
     appContext.settings == null ||
     appContext.setAppMessage == null
   ) {
-    throw new Error('useAppContext context is not initialised properly');
+    const detail = `appContext.db ${typeof appContext.db}, appContext.settings ${typeof appContext.settings}, appContext.setAppMessage ${typeof appContext.setAppMessage}`;
+    throw new Error(
+      'useAppContext context is not initialised properly ' + detail,
+    );
   }
   return appContext;
 }

@@ -18,7 +18,6 @@ const SkillDetail = ({
   const [skillDetail, setSkillDetail] = useState(skill);
 
   useEffect(() => {
-    console.log(settings);
     if (skill.contents == null) {
       SkillsApi.getSkillDetail(settings, skill.file_id).then(res => {
         if (res.success && res.data != null) {
