@@ -29,7 +29,7 @@ const LogLine = ({
 };
 
 const TextLog = ({ logId, onDismiss }: LogProps) => {
-  const { db, settings, setAppMessage } = useAppContext();
+  const { db, settings } = useAppContext();
   const logLines = useRef(Array(settings.logBatch).fill('')).current;
   const [logDef, setLogDef] = useState<LogDef | null>(null);
 
@@ -54,7 +54,6 @@ const TextLog = ({ logId, onDismiss }: LogProps) => {
     const result = await db.saveTextLog(logId, logLines);
     if (result.success) {
       onDismiss('Thanks!');
-      setAppMessage('Thanks!');
     } else {
       onDismiss('There was a problem :(');
     }

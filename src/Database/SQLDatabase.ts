@@ -78,11 +78,12 @@ const findSkill = (searchTerm: string) =>
     `%${guardedTrim(searchTerm).toUpperCase()}%`,
   ]);
 
-const getChecklistItems = () =>
+const getChecklistItems = (logId: number) =>
   select<ChecklistItem>(
     `SELECT c.id, c.item, l.logged FROM checklist c
-LEFT OUTER JOIN checklist_log l ON c.id = l.checklist_id AND l.logged = ?`,
-    [unixDateToday()],
+LEFT OUTER JOIN checklist_log l ON c.id = l.checklist_id AND l.logged = ?
+WHERE c.log_id = ?`,
+    [unixDateToday(), logId],
     x => {
       return {
         id: x.id,

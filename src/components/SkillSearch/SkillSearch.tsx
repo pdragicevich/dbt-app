@@ -22,7 +22,6 @@ const SkillSearch = ({ onHide }: { onHide: () => void }) => {
       } else {
         db.findSkill(str)
           .then(res => {
-            console.log(res);
             setResult(res);
           })
           .catch(() => setResult([]));

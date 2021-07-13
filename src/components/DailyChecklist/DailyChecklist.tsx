@@ -3,23 +3,8 @@ import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
 import { Checkbox, Title } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
-import ChecklistItem from '../../models/ChecklistItem';
-
-function checklistSort(a: ChecklistItem, b: ChecklistItem) {
-  if (a.checked && !b.checked) {
-    return 1;
-  }
-  if (!a.checked && b.checked) {
-    return -1;
-  }
-  if (a.id > b.id) {
-    return 1;
-  }
-  if (a.id < b.id) {
-    return -1;
-  }
-  return 0;
-}
+import Log from '../../const/Log';
+import ChecklistItem, { checklistItemSort } from '../../models/ChecklistItem';
 
 const DailyChecklist = () => {
   const { db } = useAppContext();
@@ -32,8 +17,8 @@ const DailyChecklist = () => {
   }, []);
 
   async function getChecklistItems() {
-    const result = await db.getChecklistItems();
-    setItems(result.sort(checklistSort));
+    const result = await db.getChecklistItems(Log.Wellness);
+    setItems(result.sort(checklistItemSort));
   }
 
   async function setChecked(index: number) {
@@ -45,7 +30,7 @@ const DailyChecklist = () => {
       const newItems = [...items];
       newItems[index].checked = newChecked;
 
-      setItems(newItems.sort(checklistSort));
+      setItems(newItems.sort(checklistItemSort));
     } catch (ex) {
       await getChecklistItems();
     }

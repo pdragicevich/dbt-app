@@ -5,7 +5,6 @@ import AppSettings from './AppSettings/AppSettings';
 interface AppContextData {
   db: Database;
   settings: AppSettings;
-  setAppMessage: (msg: string) => void;
   updateSettings: (settings: Partial<AppSettings>) => void;
 }
 
@@ -18,12 +17,8 @@ export function useAppContext(): AppContextData {
   if (appContext == null) {
     throw new Error('useAppContext must be used within a ListContextProvider');
   }
-  if (
-    appContext.db == null ||
-    appContext.settings == null ||
-    appContext.setAppMessage == null
-  ) {
-    const detail = `appContext.db ${typeof appContext.db}, appContext.settings ${typeof appContext.settings}, appContext.setAppMessage ${typeof appContext.setAppMessage}`;
+  if (appContext.db == null || appContext.settings == null) {
+    const detail = `appContext.db ${typeof appContext.db}, appContext.settings ${typeof appContext.settings}`;
     throw new Error(
       'useAppContext context is not initialised properly ' + detail,
     );

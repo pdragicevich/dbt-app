@@ -1,19 +1,10 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import { ScrollView, View } from 'react-native';
-import AppMessage from './AppMessage';
 
-interface ScreenLayoutProps {
-  appMessage: string;
-}
-
-const ScreenLayout: React.FunctionComponent<ScreenLayoutProps> = ({
-  appMessage,
-  children,
-}) => (
+const ScreenLayout: React.FC = ({ children }) => (
   <View style={styles.view}>
     <ScrollView>{children}</ScrollView>
-    <AppMessage message={appMessage} />
   </View>
 );
 

@@ -6,31 +6,32 @@ const CreateTableVersionSQL = `CREATE TABLE IF NOT EXISTS Version(
 );`;
 
 const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
-    id INTEGER PRIMARY KEY,
-    file_id TEXT NOT NULL,
-    area TEXT NOT NULL,
-    section TEXT NOT NULL,
-    title TEXT NOT NULL,
-    summary TEXT NOT NULL,
-    contents TEXT);`;
+  id INTEGER PRIMARY KEY,
+  file_id TEXT NOT NULL,
+  area TEXT NOT NULL,
+  section TEXT NOT NULL,
+  title TEXT NOT NULL,
+  summary TEXT NOT NULL,
+  contents TEXT);`;
 
 const CreateTableChecklistSQL = `CREATE TABLE IF NOT EXISTS checklist(
-    id INTEGER PRIMARY KEY,
-    item TEXT NOT NULL);`;
+  id INTEGER PRIMARY KEY,
+  log_id INTEGER NOT NULL,
+  item TEXT NOT NULL);`;
 
-const InitChecklistSQL = `INSERT INTO checklist (item)
+const InitChecklistSQL = `INSERT INTO checklist (log_id,item)
   VALUES
-     ('Shower'),
-     ('Sleep'),
-     ('Sunlight'),
-     ('Fruit'),
-     ('Vegies'),
-     ('Exercise'),
-     ('Fun/enjoyment'),
-     ('Protein'),
-     ('Hydration'),
-     ('Connecting'),
-     ('Productivity');`;
+     (1, 'Shower'),
+     (1, 'Sleep'),
+     (1, 'Sunlight'),
+     (1, 'Fruit'),
+     (1, 'Vegies'),
+     (1, 'Exercise'),
+     (1, 'Fun/enjoyment'),
+     (1, 'Protein'),
+     (1, 'Hydration'),
+     (1, 'Connecting'),
+     (1, 'Productivity');`;
 
 const CreateTableChecklistLogSQL = `CREATE TABLE IF NOT EXISTS checklist_log(
     id INTEGER PRIMARY KEY,
@@ -76,17 +77,25 @@ const CreateTableSettingsSQL = `CREATE TABLE IF NOT EXISTS settings(
 
 const InitLogDefSQL = `INSERT INTO log_def(id,type,name,title,question,message,icon)
    VALUES
-    (1, 0, 'mood', 'Mood Log', 'How are you feeling?', 'Thanks', 'emoticon-happy-outline'),
-    (2, 1, 'gratitude', 'Gratitude Log', 'What are you grateful for?', 'Thanks', 'human-handsup'),
-    (3, 1, 'self-esteem-boost', 'Self Esteem', 'List some of your good qualities?', 'Thanks', 'human-handsup');`;
+    (1, 0, 'selfcare', 'Self Care', 'Self care checklist', NULL, NULL),
+    (2, 1, 'mood', 'Mood Log', 'How are you feeling?', 'Thanks', 'emoticon-happy-outline'),
+    (3, 1, 'anxiety', 'Anxiety Symptoms', 'How''s your anxiety?', 'Thanks', 'emoticon-happy-outline'),
+    (4, 2, 'gratitude', 'Gratitude Log', 'What are you grateful for?', 'Thanks', 'human-handsup'),
+    (5, 2, 'self-esteem-boost', 'Self Esteem', 'List some of your good qualities?', 'Thanks', 'human-handsup');`;
 
 const InitOptionItemSQL = `INSERT INTO option_log_item(log_id,label,value,message,icon)
     VALUES
-    (1, 'Very happy', 5, 'So good!', 'emoticon-excited-outline'),
-    (1, 'Mildly happy', 4, 'Happy days!', 'emoticon-happy-outline'),
-    (1, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
-    (1, 'Not so good', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
-    (1, 'Unhappy', 1, 'Hope things pick up soon.', 'emoticon-frown-outline');`;
+    (2, 'Very happy', 5, 'So good!', 'emoticon-excited-outline'),
+    (2, 'Mildly happy', 4, 'Happy days!', 'emoticon-happy-outline'),
+    (2, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
+    (2, 'Not so good', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
+    (2, 'Unhappy', 1, 'Hope things pick up soon.', 'emoticon-frown-outline'),
+
+    (3, 'Chill', 5, 'So good!', 'emoticon-excited-outline'),
+    (3, 'Calm', 4, 'Happy days!', 'emoticon-happy-outline'),
+    (3, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
+    (3, 'Slightly anxious', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
+    (3, 'Very anxious', 1, 'Hope things pick up soon.', 'emoticon-frown-outline');`;
 
 const TableSQL = [
   CreateTableVersionSQL,

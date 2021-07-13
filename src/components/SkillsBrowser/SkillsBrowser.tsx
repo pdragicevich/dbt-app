@@ -21,24 +21,19 @@ const SkillsBrowser = () => {
 
   async function updateTitles(thecrumbs: string[]) {
     const result = await db.getSkillsTitles(thecrumbs);
-    console.log('updateTitles', result);
-
     if (result.success && result.data != null) {
-      console.log('updateTitles', result.data);
-      setTitles(result.data); // { list: result.data, keyPrefix: nowValue() }
+      setTitles(result.data);
     }
   }
 
   async function removeBreadcrumb() {
     const newBreadcrumbs = breadcrumbs.slice(0, breadcrumbs.length - 1);
-    console.log('removeBreadcrumb', newBreadcrumbs);
     setBreadcrumbs(newBreadcrumbs);
     updateTitles(newBreadcrumbs);
   }
 
   async function addBreadcrumb(crumb: string) {
     const newBreadcrumbs = [...breadcrumbs, crumb];
-    console.log('addBreadcrumb', newBreadcrumbs);
     setBreadcrumbs(newBreadcrumbs);
     updateTitles(newBreadcrumbs);
   }
@@ -65,10 +60,15 @@ const SkillsBrowser = () => {
           ))}
         </View>
         {breadcrumbs.length > 0 && (
-          <List.Item title=".." onPress={removeBreadcrumb} />
+          <List.Item
+            style={styles.listItem}
+            title=".."
+            onPress={removeBreadcrumb}
+          />
         )}
         {titles.map((t, i) => (
           <List.Item
+            style={styles.listItem}
             key={t.id < 0 ? i : t.id}
             title={t.label}
             onPress={() => handleItemPress(t)}
@@ -85,6 +85,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   crumb: {},
+  listItem: {
+    borderBottomWidth: 1,
+  },
 });
 
 export default SkillsBrowser;

@@ -16,31 +16,33 @@ import SkillsApi from '../api/SkillsApi';
 import SmileScreen from './SmileScreen/SmileScreen';
 import { Provider as PaperProvider } from 'react-native-paper';
 import theme from '../theme';
+import ChartsScreen from './ChartsScreen/ChartsScreen';
 
 type TabParamList = {
   Home: undefined;
   Help: undefined;
   Smile: undefined;
+  Charts: undefined;
   Settings: undefined;
 };
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
 const App = () => {
-  const [appMessage, setAppMessage] = useState('');
+  const [progressMessage, setProgressMessage] = useState('Starting');
   const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function initApp() {
       const readSettingsResult = await sqlDb.readSettings();
-      setAppMessage('Loading settings');
+      setProgressMessage('Loading settings');
       if (readSettingsResult.success && readSettingsResult.data != null) {
         setSettings(readSettingsResult.data);
       } else {
         console.error('initApp readSettings error', readSettingsResult);
       }
-      setAppMessage('Loading skills');
+      setProgressMessage('Loading skills');
       const skillsCount = await sqlDb.getSkillsCount();
       if (skillsCount < 1) {
         const skillsResult = await SkillsApi.getSkillsSummary(settings);
@@ -48,7 +50,7 @@ const App = () => {
           await sqlDb.saveSkills(skillsResult.data);
         }
       }
-      setAppMessage('');
+      setProgressMessage('');
       setLoading(false);
     }
 
@@ -65,11 +67,10 @@ const App = () => {
       value={{
         db: sqlDb,
         settings,
-        setAppMessage,
         updateSettings,
       }}>
       <PaperProvider theme={theme}>
-        {loading && <LoadingScreen progressMessage={appMessage} />}
+        {loading && <LoadingScreen progressMessage={progressMessage} />}
         {!loading && (
           <>
             <AppHeader />
@@ -78,7 +79,7 @@ const App = () => {
                 <Tab.Screen
                   name="Home"
                   children={() => (
-                    <ScreenLayout appMessage={appMessage}>
+                    <ScreenLayout>
                       <HomeScreen />
                     </ScreenLayout>
                   )}
@@ -96,7 +97,7 @@ const App = () => {
                 <Tab.Screen
                   name="Help"
                   children={() => (
-                    <ScreenLayout appMessage={appMessage}>
+                    <ScreenLayout>
                       <HelpScreen />
                     </ScreenLayout>
                   )}
@@ -114,7 +115,7 @@ const App = () => {
                 <Tab.Screen
                   name="Smile"
                   children={() => (
-                    <ScreenLayout appMessage={appMessage}>
+                    <ScreenLayout>
                       <SmileScreen />
                     </ScreenLayout>
                   )}
@@ -130,9 +131,27 @@ const App = () => {
                   }}
                 />
                 <Tab.Screen
+                  name="Charts"
+                  children={() => (
+                    <ScreenLayout>
+                      <ChartsScreen />
+                    </ScreenLayout>
+                  )}
+                  options={{
+                    title: 'Charts',
+                    tabBarIcon: ({ color }) => (
+                      <MaterialCommunityIcons
+                        name="emoticon-happy-outline"
+                        color={color}
+                        size={24}
+                      />
+                    ),
+                  }}
+                />
+                <Tab.Screen
                   name="Settings"
                   children={() => (
-                    <ScreenLayout appMessage={appMessage}>
+                    <ScreenLayout>
                       <SettingsScreen />
                     </ScreenLayout>
                   )}

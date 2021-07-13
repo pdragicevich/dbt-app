@@ -9,7 +9,7 @@ import SkillSearchResult from '../models/SkillSearchResult';
 
 interface Database {
   findSkill: (_arg0: string) => Promise<SkillSearchResult[]>;
-  getChecklistItems: () => Promise<ChecklistItem[]>;
+  getChecklistItems: (_arg0: number) => Promise<ChecklistItem[]>;
   getOptionLogItems: (_arg0: number) => Promise<LogItem[]>;
   getSkillById: (_arg0: number) => Promise<SkillSearchResult | null>;
   getSkillsCount: () => Promise<number>;
