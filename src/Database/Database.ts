@@ -16,6 +16,7 @@ interface Database {
   getSkillsTitles: (
     _arg0: string[],
   ) => Promise<DataResult<SkillBrowserResult[]>>;
+  insertAppLog: (_arg0: string, _arg1: string) => Promise<Result>;
   readLogDef: (_arg0: number) => Promise<LogDef | null>;
   readLogDefs: () => Promise<LogDef[]>;
   readSettings: () => Promise<DataResult<AppSettings>>;

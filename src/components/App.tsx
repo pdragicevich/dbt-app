@@ -17,6 +17,7 @@ import SmileScreen from './SmileScreen/SmileScreen';
 import { Provider as PaperProvider } from 'react-native-paper';
 import theme from '../theme';
 import ChartsScreen from './ChartsScreen/ChartsScreen';
+import appLog from '../AppLog';
 
 type TabParamList = {
   Home: undefined;
@@ -40,7 +41,7 @@ const App = () => {
       if (readSettingsResult.success && readSettingsResult.data != null) {
         setSettings(readSettingsResult.data);
       } else {
-        console.error('initApp readSettings error', readSettingsResult);
+        appLog.error('initApp readSettings error', readSettingsResult);
       }
       setProgressMessage('Loading skills');
       const skillsCount = await sqlDb.getSkillsCount();

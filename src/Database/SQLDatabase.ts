@@ -351,6 +351,20 @@ const getOptionLogItems = (logId: number) =>
 const readLogDefs = async () =>
   select<LogDef>('SELECT * FROM log_def ORDER BY id');
 
+const insertAppLog = async (message: string, severity: string) => {
+  try {
+    const db = await getDatabase();
+    const logged = unixDateNow();
+    await db.executeSql(
+      'INSERT INTO app_log(logged,severity,message) VALUES (?,?,?)',
+      [logged, severity, message],
+    );
+    return result(true);
+  } catch (ex) {
+    return result(false, ex);
+  }
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
@@ -358,6 +372,7 @@ const sqlDatabase: Database = {
   getSkillById,
   getSkillsCount,
   getSkillsTitles,
+  insertAppLog,
   readLogDef,
   readLogDefs,
   readSettings,

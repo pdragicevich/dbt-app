@@ -15,7 +15,7 @@ export default AppContext;
 export function useAppContext(): AppContextData {
   const appContext = useContext(AppContext);
   if (appContext == null) {
-    throw new Error('useAppContext must be used within a ListContextProvider');
+    throw new Error('useAppContext must be used within a AppContextProvider');
   }
   if (appContext.db == null || appContext.settings == null) {
     const detail = `appContext.db ${typeof appContext.db}, appContext.settings ${typeof appContext.settings}`;

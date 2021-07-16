@@ -72,6 +72,12 @@ const CreateTableSettingsSQL = `CREATE TABLE IF NOT EXISTS settings(
     key TEXT NOT NULL,
     value TEXT NOT NULL);`;
 
+const CreateTableAppLogSQL = `CREATE TABLE IF NOT EXISTS app_log(
+    id INTEGER PRIMARY KEY,
+    logged INTEGER NOT NULL,
+    severity TEXT NOT NULL,
+    message TEXT NOT NULL);`;
+
 // (0, 'depression', 'Depression Symptoms', 'How is your depression?', 'emoticon-neutral-outline'),
 // (0, 'anxiety', 'Anxiety Symptoms', 'How is your anxiety?', 'emoticon-neutral-outline'),
 
@@ -100,6 +106,7 @@ const InitOptionItemSQL = `INSERT INTO option_log_item(log_id,label,value,messag
 const TableSQL = [
   CreateTableVersionSQL,
   CreateTableSettingsSQL,
+  CreateTableAppLogSQL,
   CreateSkillsTableSQL,
   CreateTableChecklistSQL,
   CreateTableChecklistLogSQL,
@@ -161,7 +168,7 @@ export class DbInit {
     // Select the highest version number from the version table
     try {
       const results = await database.executeSql(
-        'SELECT version FROM Version ORDER BY version DESC LIMIT 1;',
+        'SELECT MAX(version) FROM Version;',
       );
       if (hasAny(results) && hasAny(results[0].rows)) {
         const version = results[0].rows.item(0).version;
