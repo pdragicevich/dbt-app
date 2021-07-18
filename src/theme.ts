@@ -12,7 +12,7 @@ import { DefaultTheme } from 'react-native-paper';
 //   }
 // }
 
-const theme = {
+const dbtAppTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
@@ -21,4 +21,4 @@ const theme = {
   },
 };
 
-export default theme;
+export default dbtAppTheme;

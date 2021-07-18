@@ -48,7 +48,7 @@ async function open(): Promise<SQLiteDatabase> {
   return db;
 }
 
-async function close(): Promise<void> {
+async function close() {
   if (databaseInstance == null) {
     return;
   }
@@ -63,7 +63,11 @@ AppState.addEventListener('change', handleAppStateChange);
 function handleAppStateChange(nextAppState: AppStateStatus) {
   if (appState === 'active' && nextAppState.match(/inactive|background/)) {
     // App has moved from the foreground into the background (or become inactive)
-    close();
+    close().catch(ex => {
+      console.warn(
+        `SQLDatabase handleAppStateChange ${appState} -> ${nextAppState}: ${ex}`,
+      );
+    });
   }
   appState = nextAppState;
 }
@@ -73,16 +77,17 @@ function noResults(results: any) {
   return !hasAny(results) || !hasAny(results[0].rows);
 }
 
-const findSkill = (searchTerm: string) =>
-  select<SkillSearchResult>('SELECT * FROM skills WHERE UPPER(title) LIKE ?', [
-    `%${guardedTrim(searchTerm).toUpperCase()}%`,
-  ]);
+const findSkill = (searchTerm: string, maxResults: number) =>
+  select<SkillSearchResult>(
+    'SELECT * FROM skills WHERE UPPER(title) LIKE ? ORDER BY Title ASC LIMIT ?',
+    [`%${guardedTrim(searchTerm).toUpperCase()}%`, maxResults],
+  );
 
 const getChecklistItems = (logId: number) =>
   select<ChecklistItem>(
     `SELECT c.id, c.item, l.logged FROM checklist c
 LEFT OUTER JOIN checklist_log l ON c.id = l.checklist_id AND l.logged = ?
-WHERE c.log_id = ?`,
+WHERE c.log_id = ? ORDER BY c.position ASC`,
     [unixDateToday(), logId],
     x => {
       return {
@@ -235,12 +240,14 @@ const readSettings = async () => {
       const row = rows.item(i) as SettingsRow;
 
       switch (row.key) {
-        case 'logBatch':
-          settings.logBatch = parseInt(row.value, 10);
+        case 'textLogBatch':
+          settings.textLogBatch = parseInt(row.value, 10);
           break;
-
         case 'skillsApiUrl':
           settings.skillsApiUrl = guardedTrim(row.value);
+          break;
+        case 'snackbarDurationMs':
+          settings.snackbarDurationMs = parseInt(row.value, 10);
           break;
       }
     }
@@ -275,20 +282,20 @@ const getSkillsTitles = async (breadcrumbs: string[]) => {
     switch (breadcrumbs.length) {
       case 0:
         results = await db.executeSql(
-          'SELECT DISTINCT(area) breadcrumb FROM skills ORDER BY area',
+          'SELECT DISTINCT(area) breadcrumb FROM skills ORDER BY area ASC',
         );
         break;
 
       case 1:
         results = await db.executeSql(
-          'SELECT DISTINCT(section) breadcrumb FROM skills WHERE area = ? ORDER BY section',
+          'SELECT DISTINCT(section) breadcrumb FROM skills WHERE area = ? ORDER BY section ASC',
           breadcrumbs,
         );
         break;
 
       case 2:
         results = await db.executeSql(
-          'SELECT id, title breadcrumb FROM skills WHERE area = ? AND section = ? ORDER BY title',
+          'SELECT id, title breadcrumb FROM skills WHERE area = ? AND section = ? ORDER BY title ASC',
           breadcrumbs,
         );
         break;
@@ -346,10 +353,13 @@ const readLogDef = async (id: number) => {
 };
 
 const getOptionLogItems = (logId: number) =>
-  select<LogItem>('SELECT * FROM option_log_item WHERE log_id = ?', [logId]);
+  select<LogItem>(
+    'SELECT * FROM option_log_item WHERE log_id = ? ORDER BY position ASC',
+    [logId],
+  );
 
 const readLogDefs = async () =>
-  select<LogDef>('SELECT * FROM log_def ORDER BY id');
+  select<LogDef>('SELECT * FROM log_def ORDER BY id ASC');
 
 const insertAppLog = async (message: string, severity: string) => {
   try {

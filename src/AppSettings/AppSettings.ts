@@ -1,11 +1,13 @@
 interface AppSettings {
-  logBatch: number;
+  textLogBatch: number;
   skillsApiUrl: string;
+  snackbarDurationMs: number;
 }
 
 export const defaultSettings: AppSettings = {
-  logBatch: 3,
+  textLogBatch: 3,
   skillsApiUrl: 'https://skillsapi.albemuth.net',
+  snackbarDurationMs: 3000,
 };
 
 export default AppSettings;

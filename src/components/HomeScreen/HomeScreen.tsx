@@ -1,11 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import DailyChecklist from '../DailyChecklist/DailyChecklist';
+import Log from '../../const/Log';
+import Checklist from '../Checklist/Checklist';
 
 const HomeScreen = () => {
   return (
     <View>
-      <DailyChecklist />
+      <Checklist logId={Log.Wellness} />
     </View>
   );
 };

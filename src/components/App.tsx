@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import HomeScreen from './HomeScreen/HomeScreen';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
 import AppHeader from './AppHeader';
@@ -15,9 +15,10 @@ import { useEffect } from 'react';
 import SkillsApi from '../api/SkillsApi';
 import SmileScreen from './SmileScreen/SmileScreen';
 import { Provider as PaperProvider } from 'react-native-paper';
-import theme from '../theme';
 import ChartsScreen from './ChartsScreen/ChartsScreen';
 import appLog from '../AppLog';
+import dbtAppTheme from '../theme';
+import AppConfig from '../models/AppConfig';
 
 type TabParamList = {
   Home: undefined;
@@ -29,10 +30,11 @@ type TabParamList = {
 
 const Tab = createMaterialBottomTabNavigator<TabParamList>();
 
-const App = () => {
+const App = ({ displayName }: { displayName: string }) => {
   const [progressMessage, setProgressMessage] = useState('Starting');
   const [settings, setSettings] = useState(defaultSettings);
   const [loading, setLoading] = useState(true);
+  const appConfig = useRef<AppConfig>({ appDisplayName: displayName }).current;
 
   useEffect(() => {
     async function initApp() {
@@ -67,16 +69,19 @@ const App = () => {
     <AppContext.Provider
       value={{
         db: sqlDb,
+        config: appConfig,
         settings,
         updateSettings,
       }}>
-      <PaperProvider theme={theme}>
+      <PaperProvider theme={dbtAppTheme}>
         {loading && <LoadingScreen progressMessage={progressMessage} />}
         {!loading && (
           <>
             <AppHeader />
             <NavigationContainer>
-              <Tab.Navigator shifting={false}>
+              <Tab.Navigator
+                shifting={false}
+                barStyle={{ backgroundColor: dbtAppTheme.colors.primary }}>
                 <Tab.Screen
                   name="Home"
                   children={() => (
@@ -142,7 +147,7 @@ const App = () => {
                     title: 'Charts',
                     tabBarIcon: ({ color }) => (
                       <MaterialCommunityIcons
-                        name="emoticon-happy-outline"
+                        name="chart-bar"
                         color={color}
                         size={24}
                       />

@@ -7,6 +7,7 @@ import { useEffect } from 'react';
 import LogDef from '../models/LogDef';
 import { useAppContext } from '../AppContext';
 import LogType from '../const/LogType';
+import AboutPopup from './AboutPopup/AboutPopup';
 
 //const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
@@ -17,10 +18,11 @@ interface AppHeaderState {
   showTextLogMenu?: boolean;
   textLogId?: number;
   message?: string;
+  aboutVisible?: boolean;
 }
 
 const AppHeader = () => {
-  const { db } = useAppContext();
+  const { db, config, settings } = useAppContext();
 
   const [state, setState] = useState<AppHeaderState>({});
   const [logDefs, setLogDefs] = useState<LogDef[]>([]);
@@ -48,14 +50,20 @@ const AppHeader = () => {
   }
 
   function changeState(obj: Partial<AppHeaderState>) {
-    const newState = { ...state, obj };
+    const newState = { ...state, ...obj };
+    console.log(newState);
     setState(newState);
+  }
+
+  function showAbout() {
+    console.log('showAbout');
+    changeState({ aboutVisible: true });
   }
 
   return (
     <>
       <Appbar.Header>
-        <Appbar.Content title="Paul's Wellness App" />
+        <Appbar.Content title={config.appDisplayName} onPress={showAbout} />
         <Menu
           visible={!!state.showOptionLogMenu}
           onDismiss={() => setState({})}
@@ -111,9 +119,19 @@ const AppHeader = () => {
       )}
       <Snackbar
         onDismiss={() => changeState({ message: undefined })}
-        visible={!!state.message}>
+        visible={!!state.message}
+        duration={settings.snackbarDurationMs}
+        action={{
+          label: 'Ok',
+          onPress: () => changeState({ message: undefined }),
+        }}>
         {state.message ?? ''}
       </Snackbar>
+      {state.aboutVisible && (
+        <AboutPopup
+          onDismiss={() => changeState({ aboutVisible: undefined })}
+        />
+      )}
     </>
   );
 };

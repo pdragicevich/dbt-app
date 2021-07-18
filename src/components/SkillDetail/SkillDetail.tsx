@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
-import { Dialog, Portal, Text } from 'react-native-paper';
-import SkillsApi from '../../api/SkillsApi';
-import { useAppContext } from '../../AppContext';
-import SkillSearchResult from '../../models/SkillSearchResult';
 import Markdown from 'react-native-markdown-display';
+import React, { useState } from 'react';
+import SkillSearchResult from '../../models/SkillSearchResult';
+import SkillsApi from '../../api/SkillsApi';
+import { Button, ScrollView, StyleSheet } from 'react-native';
+import { Dialog, Portal, Text } from 'react-native-paper';
+import { useAppContext } from '../../AppContext';
+import { useEffect } from 'react';
 
 const SkillDetail = ({
   skill,
@@ -36,15 +37,43 @@ const SkillDetail = ({
 
   return (
     <Portal>
-      <Dialog visible={true} onDismiss={onDismiss}>
-        <Dialog.Title>{skillDetail.title}</Dialog.Title>
-        <Dialog.Content>
-          {!skillDetail.contents && <Text>{skillDetail.summary}</Text>}
-          {skillDetail.contents && <Markdown>{skillDetail.contents}</Markdown>}
+      <Dialog visible={true} onDismiss={onDismiss} style={styles.dialog}>
+        <Dialog.Title style={styles.title}>{skillDetail.title}</Dialog.Title>
+        <Dialog.Content style={styles.content}>
+          <ScrollView style={styles.scroll}>
+            {!skillDetail.contents && <Text>{skillDetail.summary}</Text>}
+            {skillDetail.contents && (
+              <Markdown>{skillDetail.contents}</Markdown>
+            )}
+          </ScrollView>
         </Dialog.Content>
+        <Dialog.Actions style={styles.actions}>
+          <Button onPress={onDismiss} title="Done">
+            Done
+          </Button>
+        </Dialog.Actions>
       </Dialog>
     </Portal>
   );
 };
+
+const styles = StyleSheet.create({
+  dialog: {
+    flexDirection: 'column',
+    justifyContent: 'space-between',
+  },
+  title: {
+    margin: 0,
+    padding: 0,
+  },
+  content: {
+    maxHeight: '70%',
+  },
+  actions: {},
+  scroll: {
+    margin: 0,
+    padding: 0,
+  },
+});
 
 export default SkillDetail;

@@ -9,6 +9,7 @@ import {
 } from 'react-native-paper';
 import SkillsApi from '../../api/SkillsApi';
 import { useAppContext } from '../../AppContext';
+import backupDatabase from './Backup';
 
 const SettingsScreen = () => {
   const { db, settings } = useAppContext();
@@ -45,7 +46,7 @@ const SettingsScreen = () => {
     if (success) {
       setMessage('Reloaded skills OK!');
     } else {
-      setMessage('There was a problem doing that!');
+      setMessage('There was a problem doing that.');
     }
   }
 
@@ -53,18 +54,43 @@ const SettingsScreen = () => {
     setMessage('');
   }
 
+  async function backup() {
+    try {
+      await backupDatabase();
+      setMessage('Backed up successfully!');
+    } catch (ex) {
+      db.insertAppLog('error', `SettingsScreen backup ${ex}`);
+      console.error('SettingsScreen backup ERROR', ex);
+      setMessage('Sorry, there was a problem doing that');
+    }
+  }
+
   return (
     <View>
       <Title>Settings</Title>
-      <Subheading>Danger!</Subheading>
+
+      <Subheading>Backup</Subheading>
+      <Button icon="database" mode="contained" onPress={backup}>
+        Backup
+      </Button>
+
+      <Subheading>Dangerous operations</Subheading>
       <Button icon="alert" mode="contained" onPress={initDb}>
         Re-initialise database
       </Button>
       <Button icon="alert" mode="contained" onPress={reloadSkills}>
         Reload skills
       </Button>
+
       <Portal>
-        <Snackbar visible={!!message} onDismiss={onDismissMessage}>
+        <Snackbar
+          visible={!!message}
+          onDismiss={onDismissMessage}
+          duration={settings.snackbarDurationMs}
+          action={{
+            label: 'Ok',
+            onPress: onDismissMessage,
+          }}>
           {message}
         </Snackbar>
       </Portal>

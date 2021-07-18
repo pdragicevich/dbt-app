@@ -17,21 +17,25 @@ const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
 const CreateTableChecklistSQL = `CREATE TABLE IF NOT EXISTS checklist(
   id INTEGER PRIMARY KEY,
   log_id INTEGER NOT NULL,
+  position INTEGER NOT NULL,
   item TEXT NOT NULL);`;
 
-const InitChecklistSQL = `INSERT INTO checklist (log_id,item)
+const InitChecklistSQL = `INSERT INTO checklist (log_id,position,item)
   VALUES
-     (1, 'Shower'),
-     (1, 'Sleep'),
-     (1, 'Sunlight'),
-     (1, 'Fruit'),
-     (1, 'Vegies'),
-     (1, 'Exercise'),
-     (1, 'Fun/enjoyment'),
-     (1, 'Protein'),
-     (1, 'Hydration'),
-     (1, 'Connecting'),
-     (1, 'Productivity');`;
+     (1, 1, 'Sleep'),
+     (1, 2, 'Hydration'),
+     (1, 3, 'Morning meds'),
+     (1, 4, 'Shower'),
+     (1, 5, 'Sunlight'),
+     (1, 6, 'Fruit'),
+     (1, 7, 'Vegies'),
+     (1, 8, 'Protein'),
+     (1, 9, 'Exercise'),
+     (1, 10, 'Fun/enjoyment'),
+     (1, 11, 'Connecting'),
+     (1, 12, 'Productivity'),
+     (1, 13, 'Evening meds'),
+     (1, 14, 'Multivitamin');`;
 
 const CreateTableChecklistLogSQL = `CREATE TABLE IF NOT EXISTS checklist_log(
     id INTEGER PRIMARY KEY,
@@ -56,6 +60,7 @@ const CreateTableOptionLogSQL = `CREATE TABLE IF NOT EXISTS option_log(
 const CreateTableOptionLogItemSQL = `CREATE TABLE IF NOT EXISTS option_log_item(
     id INTEGER PRIMARY KEY,
     log_id INTEGER NOT NULL,
+    position INTEGER NOT NULL,
     label TEXT NOT NULL,
     value INTEGER NOT NULL,
     message TEXT NOT NULL,
@@ -89,19 +94,19 @@ const InitLogDefSQL = `INSERT INTO log_def(id,type,name,title,question,message,i
     (4, 2, 'gratitude', 'Gratitude Log', 'What are you grateful for?', 'Thanks', 'human-handsup'),
     (5, 2, 'self-esteem-boost', 'Self Esteem', 'List some of your good qualities?', 'Thanks', 'human-handsup');`;
 
-const InitOptionItemSQL = `INSERT INTO option_log_item(log_id,label,value,message,icon)
+const InitOptionItemSQL = `INSERT INTO option_log_item(log_id,position,label,value,message,icon)
     VALUES
-    (2, 'Very happy', 5, 'So good!', 'emoticon-excited-outline'),
-    (2, 'Mildly happy', 4, 'Happy days!', 'emoticon-happy-outline'),
-    (2, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
-    (2, 'Not so good', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
-    (2, 'Unhappy', 1, 'Hope things pick up soon.', 'emoticon-frown-outline'),
+    (2, 1, 'Very happy', 5, 'So good!', 'emoticon-excited-outline'),
+    (2, 2, 'Mildly happy', 4, 'Happy days!', 'emoticon-happy-outline'),
+    (2, 3, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
+    (2, 4, 'Not so good', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
+    (2, 5, 'Unhappy', 1, 'Hope things pick up soon.', 'emoticon-frown-outline'),
 
-    (3, 'Chill', 5, 'So good!', 'emoticon-excited-outline'),
-    (3, 'Calm', 4, 'Happy days!', 'emoticon-happy-outline'),
-    (3, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
-    (3, 'Slightly anxious', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
-    (3, 'Very anxious', 1, 'Hope things pick up soon.', 'emoticon-frown-outline');`;
+    (3, 1, 'Chill', 5, 'So good!', 'emoticon-excited-outline'),
+    (3, 2, 'Calm', 4, 'Happy days!', 'emoticon-happy-outline'),
+    (3, 3, 'Neutral', 3, 'Thanks!', 'emoticon-neutral-outline'),
+    (3, 4, 'Slightly anxious', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
+    (3, 5, 'Very anxious', 1, 'Hope things pick up soon.', 'emoticon-frown-outline');`;
 
 const TableSQL = [
   CreateTableVersionSQL,

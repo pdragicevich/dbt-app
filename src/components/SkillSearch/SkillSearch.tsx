@@ -20,7 +20,7 @@ const SkillSearch = ({ onHide }: { onHide: () => void }) => {
       if (str.length < 1) {
         setResult([]);
       } else {
-        db.findSkill(str)
+        db.findSkill(str, 5)
           .then(res => {
             setResult(res);
           })
@@ -43,6 +43,8 @@ const SkillSearch = ({ onHide }: { onHide: () => void }) => {
           onChangeText={doSearch}
           onIconPress={() => onHide()}
           value={search}
+          autoFocus={true}
+          onBlur={() => onHide()}
         />
         {hasAny(result) && (
           <View style={styles.results}>

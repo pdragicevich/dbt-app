@@ -1,36 +1,14 @@
 import React, { useRef, useState } from 'react';
 import { useEffect } from 'react';
-import { Title, Button, TextInput, Portal, Dialog } from 'react-native-paper';
+import { Title, Button, Portal, Dialog } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
 import LogDef from '../../models/LogDef';
 import LogProps from '../../models/LogProps';
-
-const LogLine = ({
-  placeholder,
-  initialValue,
-  onChangeText,
-}: {
-  placeholder: string;
-  initialValue: string;
-  onChangeText: (text: string) => void;
-}) => {
-  const [value, setValue] = useState(initialValue);
-  function handleChanged(text: string) {
-    setValue(text);
-    onChangeText(text);
-  }
-  return (
-    <TextInput
-      placeholder={placeholder}
-      value={value}
-      onChangeText={handleChanged}
-    />
-  );
-};
+import LogLine from './LogLine';
 
 const TextLog = ({ logId, onDismiss }: LogProps) => {
   const { db, settings } = useAppContext();
-  const logLines = useRef(Array(settings.logBatch).fill('')).current;
+  const logLines = useRef(Array(settings.textLogBatch).fill('')).current;
   const [logDef, setLogDef] = useState<LogDef | null>(null);
 
   useEffect(() => {
@@ -71,6 +49,7 @@ const TextLog = ({ logId, onDismiss }: LogProps) => {
               placeholder={'Entry ' + (i + 1)}
               initialValue={v}
               onChangeText={text => setLogLine(i, text)}
+              autoFocus={i === 0}
             />
           ))}
           <Button mode="contained" onPress={saveTextLog}>
