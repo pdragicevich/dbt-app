@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useEffect } from 'react';
 import { ScrollView, View } from 'react-native';
-import { Checkbox, Title } from 'react-native-paper';
+import { Checkbox, List, Title } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
 import ChecklistItem, { checklistItemSort } from '../../models/ChecklistItem';
 import LogDef from '../../models/LogDef';
@@ -47,11 +47,16 @@ const Checklist = ({ logId }: { logId: number }) => {
       <Title>{logDef?.title ?? 'Daily checklist'}</Title>
       <ScrollView>
         {items.map((x, i) => (
-          <Checkbox.Item
+          <List.Item
             key={x.id}
-            label={x.item}
-            onPress={() => setChecked(i)}
-            status={x.checked ? 'checked' : 'unchecked'}
+            title={x.item}
+            left={() => (
+              <Checkbox
+                key={x.id}
+                onPress={() => setChecked(i)}
+                status={x.checked ? 'checked' : 'unchecked'}
+              />
+            )}
           />
         ))}
       </ScrollView>

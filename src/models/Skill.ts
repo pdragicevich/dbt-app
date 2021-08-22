@@ -4,6 +4,7 @@ interface Skill {
   section: string;
   title: string;
   summary: string;
+  keywords: string;
   content?: string;
 }
 export default Skill;

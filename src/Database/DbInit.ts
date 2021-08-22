@@ -12,6 +12,7 @@ const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
   section TEXT NOT NULL,
   title TEXT NOT NULL,
   summary TEXT NOT NULL,
+  keywords TEXT NOT NULL,
   contents TEXT);`;
 
 const CreateTableChecklistSQL = `CREATE TABLE IF NOT EXISTS checklist(
@@ -88,7 +89,7 @@ const CreateTableAppLogSQL = `CREATE TABLE IF NOT EXISTS app_log(
 
 const InitLogDefSQL = `INSERT INTO log_def(id,type,name,title,question,message,icon)
    VALUES
-    (1, 0, 'selfcare', 'Self Care', 'Self care checklist', NULL, NULL),
+    (1, 0, 'selfcare', 'Self Care Checklist', 'Self care checklist', NULL, NULL),
     (2, 1, 'mood', 'Mood Log', 'How are you feeling?', 'Thanks', 'emoticon-happy-outline'),
     (3, 1, 'anxiety', 'Anxiety Symptoms', 'How''s your anxiety?', 'Thanks', 'emoticon-happy-outline'),
     (4, 2, 'gratitude', 'Gratitude Log', 'What are you grateful for?', 'Thanks', 'human-handsup'),

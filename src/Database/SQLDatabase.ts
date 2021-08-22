@@ -77,11 +77,13 @@ function noResults(results: any) {
   return !hasAny(results) || !hasAny(results[0].rows);
 }
 
-const findSkill = (searchTerm: string, maxResults: number) =>
-  select<SkillSearchResult>(
-    'SELECT * FROM skills WHERE UPPER(title) LIKE ? ORDER BY Title ASC LIMIT ?',
-    [`%${guardedTrim(searchTerm).toUpperCase()}%`, maxResults],
+const findSkill = (searchTerm: string, maxResults: number) => {
+  const searchPart = `%${guardedTrim(searchTerm).toUpperCase()}%`;
+  return select<SkillSearchResult>(
+    'SELECT * FROM skills WHERE UPPER(title) LIKE ? OR UPPER(keywords) LIKE ? ORDER BY Title ASC LIMIT ?',
+    [searchPart, searchPart, maxResults],
   );
+};
 
 const getChecklistItems = (logId: number) =>
   select<ChecklistItem>(
@@ -205,10 +207,10 @@ const saveSkills = async (skills: Skill[]) => {
 
     await db.transaction(tx => {
       tx.executeSql('DELETE FROM skills');
-      for (const skill of skills) {
+      for (const { id, area, section, title, summary, keywords } of skills) {
         tx.executeSql(
-          'INSERT INTO skills(file_id,area,section,title,summary) VALUES (?,?,?,?,?)',
-          [skill.id, skill.area, skill.section, skill.title, skill.summary],
+          'INSERT INTO skills(file_id,area,section,title,summary,keywords) VALUES (?,?,?,?,?,?)',
+          [id, area, section, title, summary, keywords],
         );
       }
     });
