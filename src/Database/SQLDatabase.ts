@@ -8,6 +8,7 @@ import { dataResult, result } from '../models/Result';
 import Skill from '../models/Skill';
 import SkillBrowserResult from '../models/SkillBrowserResult';
 import SkillSearchResult from '../models/SkillSearchResult';
+import Version from '../models/Version';
 import {
   firstOrDefault,
   guardedTrim,
@@ -377,6 +378,23 @@ const insertAppLog = async (message: string, severity: string) => {
   }
 };
 
+const getVersion: () => Promise<Version> = async () => {
+  const db = await getDatabase();
+  const results = await db.executeSql(
+    'SELECT * FROM Version ORDER BY id DESC LIMIT 1',
+  );
+
+  if (noResults(results)) {
+    return {
+      id: 0,
+      version: '0.0.0',
+      title: 'No version info available',
+    };
+  }
+
+  return results[0].rows.item(0) as Version;
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
@@ -384,6 +402,7 @@ const sqlDatabase: Database = {
   getSkillById,
   getSkillsCount,
   getSkillsTitles,
+  getVersion,
   insertAppLog,
   readLogDef,
   readLogDefs,

@@ -1,11 +1,24 @@
-import React from 'react';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Button, StyleSheet } from 'react-native';
 import { Dialog, Portal, Text } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
+import Nullable from '../../models/Nullable';
+import Version from '../../models/Version';
 import { nowYear } from '../../utils';
 
 const AboutPopup = ({ onDismiss }: { onDismiss: () => void }) => {
-  const { config } = useAppContext();
+  const { db, config } = useAppContext();
+  const [version, setVersion] = useState<Nullable<Version>>(null);
+
+  useEffect(() => {
+    async function getVersion() {
+      const dbVersion = await db.getVersion();
+      setVersion(dbVersion);
+    }
+    getVersion();
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, []);
 
   return (
     <Portal>
@@ -14,6 +27,11 @@ const AboutPopup = ({ onDismiss }: { onDismiss: () => void }) => {
           {config.appDisplayName}
         </Dialog.Title>
         <Dialog.Content style={styles.content}>
+          {version && (
+            <Text>
+              Version {version.version} ({version.title})
+            </Text>
+          )}
           <Text>Written by Paul Dragicevich {nowYear()}</Text>
         </Dialog.Content>
         <Dialog.Actions style={styles.actions}>

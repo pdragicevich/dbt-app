@@ -6,6 +6,7 @@ import Result, { DataResult } from '../models/Result';
 import Skill from '../models/Skill';
 import SkillBrowserResult from '../models/SkillBrowserResult';
 import SkillSearchResult from '../models/SkillSearchResult';
+import Version from '../models/Version';
 
 interface Database {
   findSkill: (
@@ -29,6 +30,7 @@ interface Database {
   saveSkills: (_arg0: Skill[]) => Promise<Result>;
   saveTextLog: (_arg0: number, _arg1: string[]) => Promise<Result>;
   updateSkillContent: (_arg0: number, _arg1: string) => Promise<Result>;
+  getVersion: () => Promise<Version>;
 }
 
 export default Database;

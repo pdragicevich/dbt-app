@@ -2,7 +2,8 @@ import { SQLiteDatabase } from 'react-native-sqlite-storage';
 
 const CreateTableVersionSQL = `CREATE TABLE IF NOT EXISTS Version(
   id INTEGER PRIMARY KEY NOT NULL,
-  version INTEGER
+  version TEXT NOT NULL,
+  title TEXT NOT NULL
 );`;
 
 const CreateSkillsTableSQL = `CREATE TABLE IF NOT EXISTS skills(
@@ -174,10 +175,10 @@ export class DbInit {
     // Select the highest version number from the version table
     try {
       const results = await database.executeSql(
-        'SELECT MAX(version) FROM Version;',
+        'SELECT * FROM Version ORDER BY id DESC LIMIT 1;',
       );
       if (hasAny(results) && hasAny(results[0].rows)) {
-        const version = results[0].rows.item(0).version;
+        const version = results[0].rows.item(0).id;
         return version;
       } else {
         return 0;
@@ -198,15 +199,19 @@ export class DbInit {
     transaction.executeSql(InitLogDefSQL);
     transaction.executeSql(InitOptionItemSQL);
     // Lastly, update the database version
-    transaction.executeSql('INSERT INTO Version (version) VALUES (1);');
+    transaction.executeSql(
+      "INSERT INTO Version (id,version,title) VALUES (1,'0.1.0','First version alpha');",
+    );
   }
   // This function should be called when the version of the db is < 2
-  private preVersion2Inserts(transaction: SQLite.Transaction) {
-    console.log('Running pre-version 2 DB inserts');
+  // private preVersion2Inserts(transaction: SQLite.Transaction) {
+  //   console.log('Running pre-version 2 DB inserts');
 
-    // Make schema changes
-    transaction.executeSql('ALTER TABLE ...');
-    // Lastly, update the database version
-    transaction.executeSql('INSERT INTO Version (version) VALUES (2);');
-  }
+  //   // Make schema changes
+  //   transaction.executeSql('ALTER TABLE ...');
+  //   // Lastly, update the database version
+  //   transaction.executeSql(
+  //     'INSERT INTO Version (id,version,title) VALUES (2);',
+  //   );
+  // }
 }
