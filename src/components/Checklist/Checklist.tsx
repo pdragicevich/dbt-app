@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
-import { useEffect } from 'react';
-import { ScrollView, View } from 'react-native';
-import { Checkbox, List, Title } from 'react-native-paper';
-import { useAppContext } from '../../AppContext';
 import ChecklistItem, { checklistItemSort } from '../../models/ChecklistItem';
 import LogDef from '../../models/LogDef';
+import React, { useState } from 'react';
+import { Checkbox, Title } from 'react-native-paper';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { useAppContext } from '../../AppContext';
+import { useEffect } from 'react';
 
 const Checklist = ({ logId }: { logId: number }) => {
   const { db } = useAppContext();
@@ -45,23 +45,38 @@ const Checklist = ({ logId }: { logId: number }) => {
   return (
     <View>
       <Title>{logDef?.title ?? 'Daily checklist'}</Title>
-      <ScrollView>
+      <ScrollView style={styles.scrollView}>
         {items.map((x, i) => (
-          <List.Item
-            key={x.id}
-            title={x.item}
-            left={() => (
+          <View key={x.id} style={styles.item}>
+            <View style={styles.checkbox}>
               <Checkbox
                 key={x.id}
                 onPress={() => setChecked(i)}
                 status={x.checked ? 'checked' : 'unchecked'}
               />
-            )}
-          />
+            </View>
+            <Text>{x.item}</Text>
+          </View>
         ))}
       </ScrollView>
     </View>
   );
 };
+
+const styles = StyleSheet.create({
+  scrollView: {
+    marginTop: 10,
+  },
+  item: {
+    display: 'flex',
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    height: 42,
+  },
+  checkbox: {
+    marginRight: 4,
+  },
+});
 
 export default Checklist;

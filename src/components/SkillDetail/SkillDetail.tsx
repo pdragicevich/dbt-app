@@ -66,9 +66,7 @@ const styles = StyleSheet.create({
     margin: 0,
     padding: 0,
   },
-  content: {
-    maxHeight: '70%',
-  },
+  content: {},
   actions: {},
   scroll: {
     margin: 0,

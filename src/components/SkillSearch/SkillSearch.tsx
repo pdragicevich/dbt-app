@@ -1,67 +1,131 @@
-import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
-import { List, Portal, Searchbar } from 'react-native-paper';
-import { useAppContext } from '../../AppContext';
-import SkillSearchResult from '../../models/SkillSearchResult';
-import { guardedTrim, hasAny } from '../../utils';
 import _debounce from 'lodash.debounce';
+import AppContext from '../../AppContext';
+import Nullable from '../../models/Nullable';
+import React from 'react';
 import SkillDetail from '../SkillDetail/SkillDetail';
-import { useEffect } from 'react';
+import SkillSearchResult from '../../models/SkillSearchResult';
+import { DebouncedFunc } from 'lodash';
+import { guardedTrim, hasAny } from '../../utils';
+import { List, Portal, Searchbar } from 'react-native-paper';
+import { StyleSheet, View } from 'react-native';
 
-const SkillSearch = ({ onHide }: { onHide: () => void }) => {
-  const { db } = useAppContext();
+interface SkillsSearchProps {
+  onHide(): void;
+}
 
-  const [search, setSearch] = useState('');
-  const [result, setResult] = useState<SkillSearchResult[]>([]);
-  const [skill, setSkill] = useState<SkillSearchResult | null>(null);
+interface SkillsSearchState {
+  search: string;
+  result: SkillSearchResult[];
+  skill: Nullable<SkillSearchResult>;
+}
 
-  useEffect(() => {
-    const findSkill = _debounce(str => {
-      if (str.length < 1) {
-        setResult([]);
-      } else {
-        db.findSkill(str, 5)
-          .then(res => {
-            setResult(res);
-          })
-          .catch(() => setResult([]));
-      }
-    }, 500);
-    findSkill(search);
-  }, [db, search]);
+class SkillSearch extends React.Component<
+  SkillsSearchProps,
+  SkillsSearchState
+> {
+  static contextType = AppContext;
+  declare context: React.ContextType<typeof AppContext>;
 
-  function doSearch(str: string) {
-    setSearch(guardedTrim(str));
+  private findSkill: DebouncedFunc<(str: string) => void> = _debounce(str => {
+    console.warn('findSkill default not replaced in componentDidMount', str);
+  }, 1000);
+
+  constructor(props: SkillsSearchProps) {
+    super(props);
+    this.state = {
+      search: '',
+      result: [],
+      skill: null,
+    };
   }
 
-  return (
-    <Portal>
-      <View>
-        <Searchbar
-          style={styles.searchbar}
-          placeholder="Find a skill"
-          onChangeText={doSearch}
-          onIconPress={() => onHide()}
-          value={search}
-          autoFocus={true}
-          onBlur={() => onHide()}
-        />
-        {hasAny(result) && (
-          <View style={styles.results}>
-            {result.map(r => (
-              <List.Item
-                key={r.id}
-                title={r.title}
-                onPress={() => setSkill(r)}
-              />
-            ))}
-          </View>
+  componentDidMount() {
+    this.findSkill = _debounce(str => {
+      if (str.length < 1) {
+        this.setResult([]);
+      } else {
+        this.context.db
+          .findSkill(str, 5)
+          .then(res => {
+            this.setResult(res);
+          })
+          .catch(() => this.setResult([]));
+      }
+    }, this.context.settings.skillsSearchDebounceMs);
+  }
+
+  doSearch = (str: string) => {
+    const search = guardedTrim(str);
+    this.setState(
+      state => {
+        return { ...state, search };
+      },
+      () => this.findSkill(search),
+    );
+  };
+
+  setResult = (result: SkillSearchResult[]) => {
+    this.setState(state => {
+      return { ...state, result };
+    });
+  };
+
+  setSkill = (skill: Nullable<SkillSearchResult>) => {
+    this.setState(state => {
+      return { ...state, skill };
+    });
+  };
+
+  handleBlur = () => {
+    if (this.state.skill == null) {
+      this.props.onHide();
+    }
+  };
+
+  handleDismiss = () => {
+    this.setState(
+      state => {
+        return { ...state, skill: null };
+      },
+      () => this.props.onHide(),
+    );
+  };
+
+  render() {
+    return (
+      <Portal>
+        <View>
+          <Searchbar
+            style={styles.searchbar}
+            placeholder="Find a skill"
+            onChangeText={this.doSearch}
+            onIconPress={() => this.props.onHide()}
+            value={this.state.search}
+            autoFocus={true}
+            onBlur={this.handleBlur}
+          />
+          {hasAny(this.state.result) && (
+            <View style={styles.results}>
+              {this.state.result.map(r => (
+                <List.Item
+                  key={r.id}
+                  title={r.title}
+                  onPress={() => this.setSkill(r)}
+                />
+              ))}
+            </View>
+          )}
+        </View>
+        {this.state.skill && (
+          <SkillDetail
+            skill={this.state.skill}
+            onDismiss={() => this.handleDismiss()}
+          />
         )}
-      </View>
-      {skill && <SkillDetail skill={skill} onDismiss={() => setSkill(null)} />}
-    </Portal>
-  );
-};
+      </Portal>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   results: {

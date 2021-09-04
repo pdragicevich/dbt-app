@@ -46,3 +46,7 @@ export function firstOrDefault<T>(arr: T[], defaultValue: T | null = null) {
 export function nowYear() {
   return new Date().getFullYear();
 }
+
+export function noop() {
+  return;
+}
