@@ -1,12 +1,9 @@
-export function result(
-  success: boolean,
-  ..._args: Array<string | Error>
-): Result {
+export function result(success: boolean, ..._args: Array<unknown>): Result {
   const newObj: Result = { success };
   for (const arg of _args) {
     if (typeof arg === 'string') {
       newObj.message = arg;
-    } else {
+    } else if (arg instanceof Error) {
       newObj.error = arg;
     }
   }
@@ -16,13 +13,13 @@ export function result(
 export function dataResult<T>(
   success: boolean,
   data: T | null,
-  ..._args: Array<string | Error>
+  ..._args: Array<unknown>
 ): DataResult<T> {
   const newObj: DataResult<T> = { success, data };
   for (const arg of _args) {
     if (typeof arg === 'string') {
       newObj.message = arg;
-    } else {
+    } else if (arg instanceof Error) {
       newObj.error = arg;
     }
   }

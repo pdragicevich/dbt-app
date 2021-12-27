@@ -1,15 +1,35 @@
-/* eslint-disable  @typescript-eslint/no-explicit-any */
-
-export function hasAny(obj: any) {
-  const len = obj?.length;
-  if (typeof len !== 'number') {
-    return false;
-  }
-  return len > 0;
+interface Arrayish {
+  length: number;
 }
 
-export function guardedTrim(obj: any): string {
-  if (obj == null) {
+export function hasAny(obj: unknown) {
+  if (!isArrayish(obj)) {
+    return false;
+  }
+  if (obj.length > 0) {
+    return true;
+  }
+  return false;
+}
+
+export function isArrayShape(
+  obj: unknown,
+): obj is Partial<Record<keyof Arrayish, unknown>> {
+  return obj != null && typeof obj === 'object';
+}
+
+export function isArrayish(obj: unknown): obj is Arrayish {
+  if (!isArrayShape(obj)) {
+    return false;
+  }
+  if (typeof obj.length === 'number') {
+    return true;
+  }
+  return false;
+}
+
+export function guardedTrim(obj: unknown): string {
+  if (obj == null || typeof obj !== 'object') {
     return '';
   }
   return obj.toString().trim();

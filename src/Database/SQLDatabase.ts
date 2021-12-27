@@ -73,8 +73,7 @@ function handleAppStateChange(nextAppState: AppStateStatus) {
   appState = nextAppState;
 }
 
-/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-function noResults(results: any) {
+function noResults(results: SQLite.ResultSet[]) {
   return !hasAny(results) || !hasAny(results[0].rows);
 }
 
@@ -86,27 +85,24 @@ const findSkill = (searchTerm: string, maxResults: number) => {
   );
 };
 
-const getChecklistItems = (logId: number) =>
-  select<ChecklistItem>(
+const getChecklistItems = (logId: number): Promise<ChecklistItem[]> =>
+  select<ChecklistItem, { id: number; item: string; logged: number }>(
     `SELECT c.id, c.item, l.logged FROM checklist c
 LEFT OUTER JOIN checklist_log l ON c.id = l.checklist_id AND l.logged = ?
 WHERE c.log_id = ? ORDER BY c.position ASC`,
     [unixDateToday(), logId],
-    x => {
-      return {
-        id: x.id,
-        item: x.item,
-        checked: x.logged != null,
-      };
-    },
+    x => ({
+      id: x.id,
+      item: x.item,
+      checked: x.logged != null,
+    }),
   );
 
-async function select<TResult>(
+async function select<TResult, TRow = TResult>(
   sql: string,
   params?: Array<string | number>,
-  /* eslint-disable-next-line @typescript-eslint/no-explicit-any */
-  converter?: (r: any) => TResult,
-) {
+  converter?: (r: TRow) => TResult,
+): Promise<TResult[]> {
   const returnedRows: TResult[] = [];
   const db = await getDatabase();
   const results = await db.executeSql(sql, params);
