@@ -1,23 +1,23 @@
-import AppConfig from '../models/AppConfig';
 import AppContext from '../AppContext';
-import AppHeader from './AppHeader';
 import appLog from '../AppLog';
 import AppSettings, { defaultSettings } from '../AppSettings/AppSettings';
-import ChartsScreen from './ChartsScreen/ChartsScreen';
+import sqlDb from '../Database/SQLDatabase';
+import SkillsApi from '../api/SkillsApi';
+import AppConfig from '../models/AppConfig';
 import dbtAppTheme from '../theme';
+import AppHeader from './AppHeader';
+import ChartsScreen from './ChartsScreen/ChartsScreen';
 import HelpScreen from './HelpScreen/HelpScreen';
 import HomeScreen from './HomeScreen/HomeScreen';
 import LoadingScreen from './LoadingScreen';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import React from 'react';
 import ScreenLayout from './ScreenLayout';
 import SettingsScreen from './SettingsScreen/SettingsScreen';
-import SkillsApi from '../api/SkillsApi';
 import SmileScreen from './SmileScreen/SmileScreen';
-import sqlDb from '../Database/SQLDatabase';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
-import { Provider as PaperProvider } from 'react-native-paper';
+import React from 'react';
+import { Provider as PaperProvider, Snackbar } from 'react-native-paper';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 type TabParamList = {
   Home: undefined;
@@ -37,6 +37,7 @@ interface AppState {
   progressMessage: string;
   settings: AppSettings;
   loading: boolean;
+  snackbarMessage?: string;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -52,13 +53,19 @@ class App extends React.Component<AppProps, AppState> {
     this.appConfig = { appDisplayName: props.displayName };
   }
 
-  setProgressMessage = (message: string, loading?: boolean) => {
+  setProgressMessage = (progressMessage: string, loading?: boolean) => {
     this.setState(state => {
       if (loading != null) {
-        return { ...state, loading, message };
+        return { ...state, loading, progressMessage };
       } else {
-        return { ...state, message };
+        return { ...state, progressMessage };
       }
+    });
+  };
+
+  setSnackbarMessage = (snackbarMessage: string | undefined) => {
+    this.setState(state => {
+      return { ...state, snackbarMessage };
     });
   };
 
@@ -106,18 +113,22 @@ class App extends React.Component<AppProps, AppState> {
           config: this.appConfig,
           settings: this.state.settings,
           updateSettings: this.updateSettings,
-        }}>
+        }}
+      >
         <PaperProvider theme={dbtAppTheme}>
           {this.state.loading && (
             <LoadingScreen progressMessage={this.state.progressMessage} />
           )}
           {!this.state.loading && (
             <>
-              <AppHeader />
+              <AppHeader
+                setSnackbarMessage={message => this.setSnackbarMessage(message)}
+              />
               <NavigationContainer>
                 <Tab.Navigator
                   shifting={false}
-                  barStyle={{ backgroundColor: dbtAppTheme.colors.primary }}>
+                  barStyle={{ backgroundColor: dbtAppTheme.colors.primary }}
+                >
                   <Tab.Screen
                     name="Home"
                     children={() => (
@@ -212,6 +223,17 @@ class App extends React.Component<AppProps, AppState> {
               </NavigationContainer>
             </>
           )}
+          <Snackbar
+            visible={!!this.state.snackbarMessage}
+            onDismiss={() => this.setSnackbarMessage(undefined)}
+            action={{
+              label: 'Ok',
+              onPress: () => this.setSnackbarMessage(undefined),
+            }}
+            duration={this.state.settings.snackbarDurationMs}
+          >
+            {this.state.snackbarMessage}
+          </Snackbar>
         </PaperProvider>
       </AppContext.Provider>
     );

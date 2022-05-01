@@ -1,28 +1,30 @@
-import React, { useState } from 'react';
-import { Appbar, Menu, Snackbar } from 'react-native-paper';
-import TextLog from './TextLog/TextLog';
-import OptionLog from './OptionLog/OptionLog';
-import SkillSearch from './SkillSearch/SkillSearch';
-import { useEffect } from 'react';
-import LogDef from '../models/LogDef';
 import { useAppContext } from '../AppContext';
 import LogType from '../const/LogType';
+import LogDef from '../models/LogDef';
 import AboutPopup from './AboutPopup/AboutPopup';
+import OptionLog from './OptionLog/OptionLog';
+import SkillSearch from './SkillSearch/SkillSearch';
+import TextLog from './TextLog/TextLog';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
+import { Appbar, Menu } from 'react-native-paper';
 
 //const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
+interface AppHeaderProps {
+  setSnackbarMessage(message: string): void;
+}
 interface AppHeaderState {
   searchVisible?: boolean;
   showOptionLogMenu?: boolean;
   optionLogId?: number;
   showTextLogMenu?: boolean;
   textLogId?: number;
-  message?: string;
   aboutVisible?: boolean;
 }
 
-const AppHeader = () => {
-  const { db, config, settings } = useAppContext();
+const AppHeader = (props: AppHeaderProps) => {
+  const { db, config } = useAppContext();
 
   const [state, setState] = useState<AppHeaderState>({});
   const [logDefs, setLogDefs] = useState<LogDef[]>([]);
@@ -38,11 +40,13 @@ const AppHeader = () => {
   }, []);
 
   function onOptionLogDismiss(msg: string) {
-    setState({ message: msg });
+    setState({});
+    props.setSnackbarMessage(msg);
   }
 
   function onTextLogDismiss(msg: string) {
-    setState({ message: msg });
+    setState({});
+    props.setSnackbarMessage(msg);
   }
 
   function show(val: number | undefined) {
@@ -51,12 +55,10 @@ const AppHeader = () => {
 
   function changeState(obj: Partial<AppHeaderState>) {
     const newState = { ...state, ...obj };
-    console.log(newState);
     setState(newState);
   }
 
   function showAbout() {
-    console.log('showAbout');
     changeState({ aboutVisible: true });
   }
 
@@ -72,7 +74,8 @@ const AppHeader = () => {
               icon="emoticon-happy-outline"
               onPress={() => setState({ showOptionLogMenu: true })}
             />
-          }>
+          }
+        >
           {logDefs
             .filter(x => x.type === LogType.Option)
             .map(l => (
@@ -91,7 +94,8 @@ const AppHeader = () => {
               icon="text-box-outline"
               onPress={() => setState({ showTextLogMenu: true })}
             />
-          }>
+          }
+        >
           {logDefs
             .filter(x => x.type === LogType.Text)
             .map(l => (
@@ -117,16 +121,7 @@ const AppHeader = () => {
       {show(state.textLogId) && (
         <TextLog logId={state.textLogId ?? 0} onDismiss={onTextLogDismiss} />
       )}
-      <Snackbar
-        onDismiss={() => changeState({ message: undefined })}
-        visible={!!state.message}
-        duration={settings.snackbarDurationMs}
-        action={{
-          label: 'Ok',
-          onPress: () => changeState({ message: undefined }),
-        }}>
-        {state.message ?? ''}
-      </Snackbar>
+
       {state.aboutVisible && (
         <AboutPopup
           onDismiss={() => changeState({ aboutVisible: undefined })}

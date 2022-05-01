@@ -1,9 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Dialog, List, Portal, Title } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
 import LogDef from '../../models/LogDef';
 import LogItem from '../../models/LogItem';
 import LogProps from '../../models/LogProps';
+import React, { useEffect, useState } from 'react';
+import { Dialog, List, Portal, Title } from 'react-native-paper';
 
 interface OptionLogState {
   logDef: LogDef;
