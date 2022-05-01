@@ -1,0 +1,3 @@
+BUNDLE_PATH: "vendor/bundle"
+BUNDLE_FORCE_RBY_PLATFORM: 1
+
