@@ -1,10 +1,10 @@
+import { useAppContext } from '../../AppContext';
 import ChecklistItem, { checklistItemSort } from '../../models/ChecklistItem';
 import LogDef from '../../models/LogDef';
 import React, { useState } from 'react';
-import { Checkbox, Title } from 'react-native-paper';
-import { ScrollView, StyleSheet, Text, View } from 'react-native';
-import { useAppContext } from '../../AppContext';
 import { useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, View } from 'react-native';
+import { Checkbox, Title } from 'react-native-paper';
 
 const Checklist = ({ logId }: { logId: number }) => {
   const { db } = useAppContext();

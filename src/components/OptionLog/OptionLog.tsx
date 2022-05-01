@@ -18,9 +18,11 @@ const OptionLog = ({ logId, onDismiss }: LogProps) => {
   useEffect(() => {
     async function initOptionLog() {
       const logDef = await db.readLogDef(logId);
-      const logItems = await db.getOptionLogItems(logId);
-      if (logDef != null && logItems.length > 0) {
-        setState({ logDef, logItems });
+      if (logDef != null) {
+        const logItems = await db.getOptionLogItems(logId);
+        if (logItems.length > 0) {
+          setState({ logDef, logItems });
+        }
       } else {
         onDismiss('Problem loading option log details!');
       }
