@@ -1,3 +1,6 @@
+import { useAppContext } from '../../AppContext';
+import SkillsApi from '../../api/SkillsApi';
+import backupDatabase from './Backup';
 import React, { useState } from 'react';
 import { View } from 'react-native';
 import {
@@ -7,9 +10,6 @@ import {
   Portal,
   Subheading,
 } from 'react-native-paper';
-import SkillsApi from '../../api/SkillsApi';
-import { useAppContext } from '../../AppContext';
-import backupDatabase from './Backup';
 
 const SettingsScreen = () => {
   const { db, settings } = useAppContext();
@@ -56,8 +56,12 @@ const SettingsScreen = () => {
 
   async function backup() {
     try {
-      await backupDatabase();
-      setMessage('Backed up successfully!');
+      const backupResult = await backupDatabase();
+      if (backupResult.success) {
+        setMessage('Backed up successfully!');
+      } else {
+        setMessage(backupResult.message ?? 'Unable to backup');
+      }
     } catch (ex) {
       db.insertAppLog('error', `SettingsScreen backup ${ex}`);
       console.error('SettingsScreen backup ERROR', ex);
@@ -65,9 +69,18 @@ const SettingsScreen = () => {
     }
   }
 
+  function customiseTodoList() {
+    console.log('TODO TODOs');
+  }
+
   return (
     <View>
       <Title>Settings</Title>
+
+      <Subheading>Customisation</Subheading>
+      <Button icon="database" mode="contained" onPress={customiseTodoList}>
+        Customise to-do list
+      </Button>
 
       <Subheading>Backup</Subheading>
       <Button icon="database" mode="contained" onPress={backup}>
@@ -90,7 +103,8 @@ const SettingsScreen = () => {
           action={{
             label: 'Ok',
             onPress: onDismissMessage,
-          }}>
+          }}
+        >
           {message}
         </Snackbar>
       </Portal>

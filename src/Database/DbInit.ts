@@ -1,4 +1,6 @@
+import { hasAny } from '../utils';
 import { SQLiteDatabase } from 'react-native-sqlite-storage';
+import SQLite from 'react-native-sqlite-storage';
 
 const CreateTableVersionSQL = `CREATE TABLE IF NOT EXISTS Version(
   id INTEGER PRIMARY KEY NOT NULL,
@@ -122,9 +124,6 @@ const TableSQL = [
   CreateTableOptionLogItemSQL,
   CreateTableTextLogSQL,
 ];
-
-import SQLite from 'react-native-sqlite-storage';
-import { hasAny } from '../utils';
 
 export class DbInit {
   // Perform any updates to the database schema. These can occur during initial configuration, or after an app store update.

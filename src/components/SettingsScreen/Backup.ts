@@ -1,25 +1,21 @@
+import Result, { result } from '../../models/Result';
+import { DateTime } from 'luxon';
 import { PermissionsAndroid, Platform } from 'react-native';
 import { Dirs, FileSystem } from 'react-native-file-access';
-import { DateTime } from 'luxon';
 
 const permissionWriteExternalStorage = async () => {
   const granted = await PermissionsAndroid.request(
     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-    {
-      title: 'Permission to back up database',
-      message: 'PWA yeah',
-      buttonNeutral: 'Ask Me Later',
-      buttonNegative: 'Cancel',
-      buttonPositive: 'OK',
-    },
   );
   return granted === PermissionsAndroid.RESULTS.GRANTED;
 };
 
-const backupDatabase = async () => {
+const backupDatabase: () => Promise<Result> = async () => {
   if (Platform.OS === 'android') {
     const permissionGranted = await permissionWriteExternalStorage();
-    if (permissionGranted) {
+    if (!permissionGranted) {
+      return result(false, 'Permission was not given');
+    } else {
       const dateStamp = DateTime.now().toFormat('yyyy-MM-dd_HH:mm:ss');
       const backupFilename = `pwa-${dateStamp}.db`;
       await FileSystem.cpExternal(
@@ -28,10 +24,11 @@ const backupDatabase = async () => {
         'downloads',
       ); // copies our file to the downloads folder/directory
       // file should now be visible in the downloads folder
+      return result(true);
     }
-
-    return;
   }
+
+  return result(false, `Platform ${Platform.OS} not supported yet`);
 };
 
 export default backupDatabase;

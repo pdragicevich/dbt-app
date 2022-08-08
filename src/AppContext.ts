@@ -1,7 +1,7 @@
-import React, { useContext } from 'react';
-import Database from './Database/Database';
 import AppSettings from './AppSettings/AppSettings';
+import Database from './Database/Database';
 import AppConfig from './models/AppConfig';
+import React, { useContext } from 'react';
 
 interface AppContextData {
   db: Database;

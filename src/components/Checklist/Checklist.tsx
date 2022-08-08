@@ -14,7 +14,7 @@ const Checklist = ({ logId }: { logId: number }) => {
 
   useEffect(() => {
     async function initChecklist() {
-      const result = await db.readLogDef(logId); // TODO: handle null
+      const result = await db.readLogDef(logId);
       setLogDef(result);
       await getChecklistItems();
     }
