@@ -1,5 +1,3 @@
-import { AppState, AppStateStatus } from 'react-native';
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 import AppSettings, { defaultSettings } from '../AppSettings/AppSettings';
 import ChecklistItem from '../models/ChecklistItem';
 import LogDef from '../models/LogDef';
@@ -18,6 +16,8 @@ import {
 } from '../utils';
 import Database from './Database';
 import { DbInit } from './DbInit';
+import { AppState, AppStateStatus } from 'react-native';
+import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
 
 let databaseInstance: SQLiteDatabase | null = null;
 
@@ -49,25 +49,25 @@ async function open(): Promise<SQLiteDatabase> {
   return db;
 }
 
-async function close() {
-  if (databaseInstance == null) {
-    return;
+async function close(): Promise<void> {
+  const db = databaseInstance;
+  if (db == null) {
+    return Promise.resolve();
   }
-  await databaseInstance.close();
   databaseInstance = null;
+  await db.close();
 }
 
 let appState = 'active';
 AppState.addEventListener('change', handleAppStateChange);
 
-// Handle the app going from foreground to background, and vice versa.
+// Close the database when app is backgrounded.
 function handleAppStateChange(nextAppState: AppStateStatus) {
+  console.log(`SQLDatabase AppState change ${appState} => ${nextAppState}`);
   if (appState === 'active' && nextAppState.match(/inactive|background/)) {
     // App has moved from the foreground into the background (or become inactive)
     close().catch(ex => {
-      console.warn(
-        `SQLDatabase handleAppStateChange ${appState} -> ${nextAppState}: ${ex}`,
-      );
+      console.warn(`SQLDatabase AppState change close catch ${ex}`);
     });
   }
   appState = nextAppState;
@@ -137,7 +137,11 @@ const rebuild = async () => {
   return result(true);
 };
 
-const recordChecklistCheck = async (id: number, checked: boolean) => {
+const recordChecklistCheck = async (
+  id: number,
+  numChecklistItems: number,
+  checked: boolean,
+) => {
   try {
     const db = await getDatabase();
     const today = unixDateToday();
@@ -149,8 +153,8 @@ const recordChecklistCheck = async (id: number, checked: boolean) => {
       );
       if (checked) {
         tx.executeSql(
-          'INSERT INTO checklist_log(checklist_id, logged) VALUES (?,?)',
-          [id, today],
+          'INSERT INTO checklist_log(checklist_id, num_checklist_items, logged) VALUES (?,?,?)',
+          [id, numChecklistItems, today],
         );
       }
     });

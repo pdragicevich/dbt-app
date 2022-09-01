@@ -1,6 +1,6 @@
-import Skill from '../models/Skill';
-import { dataResult } from '../models/Result';
 import AppSettings from '../AppSettings/AppSettings';
+import { dataResult } from '../models/Result';
+import Skill from '../models/Skill';
 
 const getSkillsSummary = async (settings: AppSettings) => {
   try {

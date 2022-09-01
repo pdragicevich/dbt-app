@@ -44,6 +44,7 @@ const InitChecklistSQL = `INSERT INTO checklist (log_id,position,item)
 const CreateTableChecklistLogSQL = `CREATE TABLE IF NOT EXISTS checklist_log(
     id INTEGER PRIMARY KEY,
     checklist_id INTEGER,
+    num_checklist_items INTEGER,
     logged INTEGER NOT NULL);`;
 
 const CreateTableLogDefinitionSQL = `CREATE TABLE IF NOT EXISTS log_def(

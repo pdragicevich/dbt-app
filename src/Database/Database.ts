@@ -25,7 +25,11 @@ interface Database {
   readLogDefs: () => Promise<LogDef[]>;
   readSettings: () => Promise<DataResult<AppSettings>>;
   rebuild: () => Promise<Result>;
-  recordChecklistCheck: (_arg0: number, _arg1: boolean) => Promise<Result>;
+  recordChecklistCheck: (
+    _arg0: number,
+    _arg1: number,
+    _arg2: boolean,
+  ) => Promise<Result>;
   saveOptionLog: (_arg0: number, _arg1: number) => Promise<Result>;
   saveSkills: (_arg0: Skill[]) => Promise<Result>;
   saveTextLog: (_arg0: number, _arg1: string[]) => Promise<Result>;

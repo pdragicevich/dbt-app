@@ -32,7 +32,7 @@ const Checklist = ({ logId }: { logId: number }) => {
       const id = items[index].id;
       const oldChecked = items[index].checked;
       const newChecked = !oldChecked;
-      await db.recordChecklistCheck(id, newChecked);
+      await db.recordChecklistCheck(id, items.length, newChecked);
       const newItems = [...items];
       newItems[index].checked = newChecked;
 
