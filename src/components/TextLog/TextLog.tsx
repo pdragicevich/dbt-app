@@ -1,10 +1,10 @@
-import React, { useRef, useState } from 'react';
-import { useEffect } from 'react';
-import { Title, Button, Portal, Dialog } from 'react-native-paper';
 import { useAppContext } from '../../AppContext';
 import LogDef from '../../models/LogDef';
 import LogProps from '../../models/LogProps';
 import LogLine from './LogLine';
+import React, { useRef, useState } from 'react';
+import { useEffect } from 'react';
+import { Title, Button, Portal, Dialog } from 'react-native-paper';
 
 const TextLog = ({ logId, onDismiss }: LogProps) => {
   const { db, settings } = useAppContext();

@@ -11,9 +11,6 @@ import { Appbar, Menu } from 'react-native-paper';
 
 //const MORE_ICON = Platform.OS === 'ios' ? 'dots-horizontal' : 'dots-vertical';
 
-interface AppHeaderProps {
-  setSnackbarMessage(message: string): void;
-}
 interface AppHeaderState {
   searchVisible?: boolean;
   showOptionLogMenu?: boolean;
@@ -23,8 +20,8 @@ interface AppHeaderState {
   aboutVisible?: boolean;
 }
 
-const AppHeader = (props: AppHeaderProps) => {
-  const { db, config } = useAppContext();
+const AppHeader = () => {
+  const { db, config, setSnackbar } = useAppContext();
 
   const [state, setState] = useState<AppHeaderState>({});
   const [logDefs, setLogDefs] = useState<LogDef[]>([]);
@@ -39,14 +36,14 @@ const AppHeader = (props: AppHeaderProps) => {
     /* eslint-disable-next-line react-hooks/exhaustive-deps */
   }, []);
 
-  function onOptionLogDismiss(msg: string) {
+  function onOptionLogDismiss(message: string) {
     setState({});
-    props.setSnackbarMessage(msg);
+    setSnackbar({ message });
   }
 
-  function onTextLogDismiss(msg: string) {
+  function onTextLogDismiss(message: string) {
     setState({});
-    props.setSnackbarMessage(msg);
+    setSnackbar({ message });
   }
 
   function show(val: number | undefined) {

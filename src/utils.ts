@@ -28,11 +28,8 @@ export function isArrayish(obj: unknown): obj is Arrayish {
   return false;
 }
 
-export function guardedTrim(obj: unknown): string {
-  if (obj == null || typeof obj !== 'object') {
-    return '';
-  }
-  return obj.toString().trim();
+export function guardedTrim(obj: string | null | undefined): string {
+  return obj ? obj.trim() : '';
 }
 
 export function unixDate(date: Date): number {

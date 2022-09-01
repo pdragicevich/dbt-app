@@ -1,4 +1,4 @@
-import AppContext from '../AppContext';
+import AppContext, { SnackbarContext } from '../AppContext';
 import appLog from '../AppLog';
 import AppSettings, { defaultSettings } from '../AppSettings/AppSettings';
 import sqlDb from '../Database/SQLDatabase';
@@ -37,7 +37,7 @@ interface AppState {
   progressMessage: string;
   settings: AppSettings;
   loading: boolean;
-  snackbarMessage?: string;
+  snackbar?: SnackbarContext;
 }
 
 class App extends React.Component<AppProps, AppState> {
@@ -60,12 +60,6 @@ class App extends React.Component<AppProps, AppState> {
       } else {
         return { ...state, progressMessage };
       }
-    });
-  };
-
-  setSnackbarMessage = (snackbarMessage: string | undefined) => {
-    this.setState(state => {
-      return { ...state, snackbarMessage };
     });
   };
 
@@ -101,6 +95,21 @@ class App extends React.Component<AppProps, AppState> {
     console.log('updateSettings', newSettings);
   };
 
+  setSnackbar = (data: SnackbarContext | null) => {
+    this.setState(prevState => {
+      if (!data) {
+        return {
+          ...prevState,
+          snackbar: undefined,
+        };
+      }
+      return {
+        ...prevState,
+        snackbar: data,
+      };
+    });
+  };
+
   componentDidMount() {
     this.initApp();
   }
@@ -113,6 +122,8 @@ class App extends React.Component<AppProps, AppState> {
           config: this.appConfig,
           settings: this.state.settings,
           updateSettings: this.updateSettings,
+          snackbar: this.state.snackbar,
+          setSnackbar: this.setSnackbar,
         }}
       >
         <PaperProvider theme={dbtAppTheme}>
@@ -121,9 +132,7 @@ class App extends React.Component<AppProps, AppState> {
           )}
           {!this.state.loading && (
             <>
-              <AppHeader
-                setSnackbarMessage={message => this.setSnackbarMessage(message)}
-              />
+              <AppHeader />
               <NavigationContainer>
                 <Tab.Navigator
                   shifting={false}
@@ -203,11 +212,7 @@ class App extends React.Component<AppProps, AppState> {
                   />
                   <Tab.Screen
                     name="Settings"
-                    children={() => (
-                      <ScreenLayout>
-                        <SettingsScreen />
-                      </ScreenLayout>
-                    )}
+                    children={() => <SettingsScreen />}
                     options={{
                       title: 'Settings',
                       tabBarIcon: ({ color }) => (
@@ -224,15 +229,18 @@ class App extends React.Component<AppProps, AppState> {
             </>
           )}
           <Snackbar
-            visible={!!this.state.snackbarMessage}
-            onDismiss={() => this.setSnackbarMessage(undefined)}
+            visible={!!this.state.snackbar?.message}
+            onDismiss={() => this.setSnackbar(null)}
             action={{
-              label: 'Ok',
-              onPress: () => this.setSnackbarMessage(undefined),
+              label: this.state.snackbar?.label ?? 'Ok',
+              onPress: () => this.setSnackbar(null),
             }}
-            duration={this.state.settings.snackbarDurationMs}
+            duration={
+              this.state.snackbar?.durationMs ??
+              this.state.settings.snackbarDurationMs
+            }
           >
-            {this.state.snackbarMessage}
+            {this.state.snackbar?.message}
           </Snackbar>
         </PaperProvider>
       </AppContext.Provider>

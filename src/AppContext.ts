@@ -3,11 +3,19 @@ import Database from './Database/Database';
 import AppConfig from './models/AppConfig';
 import React, { useContext } from 'react';
 
+export interface SnackbarContext {
+  message: string;
+  label?: string;
+  durationMs?: number;
+}
+
 interface AppContextData {
   db: Database;
   settings: AppSettings;
   config: AppConfig;
   updateSettings: (settings: Partial<AppSettings>) => void;
+  snackbar?: SnackbarContext;
+  setSnackbar: (data: SnackbarContext) => void;
 }
 
 const AppContext = React.createContext<AppContextData>({} as AppContextData);

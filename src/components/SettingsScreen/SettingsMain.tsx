@@ -1,20 +1,13 @@
 import { useAppContext } from '../../AppContext';
 import SkillsApi from '../../api/SkillsApi';
 import backupDatabase from './Backup';
-import React, { useState } from 'react';
+import { SettingsScreenProps } from './SettingsScreen';
+import React from 'react';
 import { View } from 'react-native';
-import {
-  Button,
-  Title,
-  Snackbar,
-  Portal,
-  Subheading,
-} from 'react-native-paper';
+import { Button, Subheading } from 'react-native-paper';
 
-const SettingsMain = () => {
-  const { db, settings } = useAppContext();
-
-  const [message, setMessage] = useState('');
+const SettingsMain = ({ navigation }: SettingsScreenProps) => {
+  const { db, settings, setSnackbar } = useAppContext();
 
   async function initDb() {
     let success = false;
@@ -28,9 +21,9 @@ const SettingsMain = () => {
       console.error('initDb', ex);
     }
     if (success) {
-      setMessage('Rebuilt OK!');
+      setSnackbar({ message: 'Rebuilt OK!' });
     } else {
-      setMessage('There was a problem doing that!');
+      setSnackbar({ message: 'There was a problem doing that!' });
     }
   }
 
@@ -44,39 +37,33 @@ const SettingsMain = () => {
       }
     }
     if (success) {
-      setMessage('Reloaded skills OK!');
+      setSnackbar({ message: 'Reloaded skills OK!' });
     } else {
-      setMessage('There was a problem doing that.');
+      setSnackbar({ message: 'There was a problem doing that.' });
     }
-  }
-
-  function onDismissMessage() {
-    setMessage('');
   }
 
   async function backup() {
     try {
       const backupResult = await backupDatabase();
       if (backupResult.success) {
-        setMessage('Backed up successfully!');
+        setSnackbar({ message: 'Backed up successfully!' });
       } else {
-        setMessage(backupResult.message ?? 'Unable to backup');
+        setSnackbar({ message: backupResult.message ?? 'Unable to backup' });
       }
     } catch (ex) {
       db.insertAppLog('error', `SettingsScreen backup ${ex}`);
       console.error('SettingsScreen backup ERROR', ex);
-      setMessage('Sorry, there was a problem doing that');
+      setSnackbar({ message: 'Sorry, there was a problem doing that' });
     }
   }
 
   function customiseTodoList() {
-    console.log('TODO TODOs');
+    navigation.navigate('todo');
   }
 
   return (
     <View>
-      <Title>Settings</Title>
-
       <Subheading>Customisation</Subheading>
       <Button icon="database" mode="contained" onPress={customiseTodoList}>
         Customise to-do list
@@ -94,20 +81,6 @@ const SettingsMain = () => {
       <Button icon="alert" mode="contained" onPress={reloadSkills}>
         Reload skills
       </Button>
-
-      <Portal>
-        <Snackbar
-          visible={!!message}
-          onDismiss={onDismissMessage}
-          duration={settings.snackbarDurationMs}
-          action={{
-            label: 'Ok',
-            onPress: onDismissMessage,
-          }}
-        >
-          {message}
-        </Snackbar>
-      </Portal>
     </View>
   );
 };

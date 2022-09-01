@@ -1,13 +1,13 @@
-import _debounce from 'lodash.debounce';
 import AppContext from '../../AppContext';
 import Nullable from '../../models/Nullable';
-import React from 'react';
-import SkillDetail from '../SkillDetail/SkillDetail';
 import SkillSearchResult from '../../models/SkillSearchResult';
-import { DebouncedFunc } from 'lodash';
 import { guardedTrim, hasAny } from '../../utils';
-import { List, Portal, Searchbar } from 'react-native-paper';
+import SkillDetail from '../SkillDetail/SkillDetail';
+import { DebouncedFunc } from 'lodash';
+import _debounce from 'lodash.debounce';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
+import { List, Portal, Searchbar } from 'react-native-paper';
 
 interface SkillsSearchProps {
   onHide(): void;
@@ -27,6 +27,7 @@ class SkillSearch extends React.Component<
   declare context: React.ContextType<typeof AppContext>;
 
   private findSkill: DebouncedFunc<(str: string) => void> = _debounce(str => {
+    // This should be replaced when componentDidMount()
     console.warn('findSkill default not replaced in componentDidMount', str);
   }, 1000);
 
