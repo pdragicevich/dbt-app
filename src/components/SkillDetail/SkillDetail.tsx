@@ -1,11 +1,11 @@
-import Markdown from 'react-native-markdown-display';
-import React, { useState } from 'react';
-import SkillSearchResult from '../../models/SkillSearchResult';
+import { useAppContext } from '../../AppContext';
 import SkillsApi from '../../api/SkillsApi';
+import SkillSearchResult from '../../models/SkillSearchResult';
+import Markdown from '@jonasmerlin/react-native-markdown-display';
+import React, { useState } from 'react';
+import { useEffect } from 'react';
 import { Button, ScrollView, StyleSheet } from 'react-native';
 import { Dialog, Portal, Text } from 'react-native-paper';
-import { useAppContext } from '../../AppContext';
-import { useEffect } from 'react';
 
 const SkillDetail = ({
   skill,
