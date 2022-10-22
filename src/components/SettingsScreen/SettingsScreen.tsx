@@ -1,6 +1,7 @@
+import Log from '../../const/Log';
 import ScreenLayout from '../ScreenLayout';
+import SettingsTodo from './SettingsChecklist/SettingsChecklist';
 import SettingsMain from './SettingsMain';
-import SettingsTodo from './SettingsTodo/SettingsTodo';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
 
@@ -32,7 +33,7 @@ const SettingsScreen = () => {
         options={{ title: 'Customise To-Do List' }}
         children={() => (
           <ScreenLayout>
-            <SettingsTodo />
+            <SettingsTodo logId={Log.Wellness} />
           </ScreenLayout>
         )}
       />
