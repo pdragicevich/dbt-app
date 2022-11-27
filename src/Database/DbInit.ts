@@ -88,6 +88,17 @@ const CreateTableAppLogSQL = `CREATE TABLE IF NOT EXISTS app_log(
     severity TEXT NOT NULL,
     message TEXT NOT NULL);`;
 
+const CreateTableStatsDefSQL = `CREATE TABLE IF NOT EXISTS stats_def(
+    id INTEGER PRIMARY KEY,
+    name TEXT NOT NULL,
+    description TEXT NOT NULL);`;
+
+const CreateTableStatsLogSQL = `CREATE TABLE IF NOT EXISTS stats_log(
+  id INTEGER PRIMARY KEY,
+  stats_id INTEGER NOT NULL,
+  date INTEGER NOT NULL,
+  value REAL NOT NULL);`;
+
 // (0, 'depression', 'Depression Symptoms', 'How is your depression?', 'emoticon-neutral-outline'),
 // (0, 'anxiety', 'Anxiety Symptoms', 'How is your anxiety?', 'emoticon-neutral-outline'),
 
@@ -113,6 +124,13 @@ const InitOptionItemSQL = `INSERT INTO option_log_item(log_id,position,label,val
     (3, 4, 'Slightly anxious', 2, 'Sorry to hear that.', 'emoticon-sad-outline'),
     (3, 5, 'Very anxious', 1, 'Hope things pick up soon.', 'emoticon-frown-outline');`;
 
+const InitStatsDefSQL = `INSERT INTO stats_def(id,name,description)
+    VALUES
+    (1, 'Checklist', 'Percentage of daily checklist items completed'),
+    (2, 'Mood log', 'Daily mood log completed'),
+    (3, 'Gratitude log', 'Gratitude log completed'),
+    (4, 'Smiling', 'Smile yoga completed');`;
+
 const TableSQL = [
   CreateTableVersionSQL,
   CreateTableSettingsSQL,
@@ -124,6 +142,8 @@ const TableSQL = [
   CreateTableOptionLogSQL,
   CreateTableOptionLogItemSQL,
   CreateTableTextLogSQL,
+  CreateTableStatsDefSQL,
+  CreateTableStatsLogSQL,
 ];
 
 export class DbInit {
@@ -198,6 +218,7 @@ export class DbInit {
     transaction.executeSql(InitChecklistSQL);
     transaction.executeSql(InitLogDefSQL);
     transaction.executeSql(InitOptionItemSQL);
+    transaction.executeSql(InitStatsDefSQL);
     // Lastly, update the database version
     transaction.executeSql(
       "INSERT INTO Version (id,version,title) VALUES (1,'0.1.0','First version alpha');",

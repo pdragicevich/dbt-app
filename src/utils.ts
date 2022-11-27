@@ -67,3 +67,8 @@ export function nowYear() {
 export function noop() {
   return;
 }
+
+export function roundTo(raw: number, decimalPlaces: number) {
+  const factor = Math.pow(10, decimalPlaces);
+  return Math.round(raw * factor) / factor;
+}

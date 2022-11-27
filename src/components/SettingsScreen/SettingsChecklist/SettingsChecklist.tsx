@@ -25,7 +25,6 @@ const SettingsChecklist = ({ logId }: { logId: number }) => {
 
   async function getChecklistItems() {
     const result = await db.getChecklistItems(logId);
-    console.log(result);
     setItems(result.sort(checklistItemSort));
   }
 

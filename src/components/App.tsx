@@ -19,7 +19,7 @@ import React from 'react';
 import { Provider as PaperProvider, Snackbar } from 'react-native-paper';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-type TabParamList = {
+export type TabParamList = {
   Home: undefined;
   Help: undefined;
   Smile: undefined;

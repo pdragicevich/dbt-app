@@ -6,6 +6,7 @@ import { dataResult, result } from '../models/Result';
 import Skill from '../models/Skill';
 import SkillBrowserResult from '../models/SkillBrowserResult';
 import SkillSearchResult from '../models/SkillSearchResult';
+import StatsLog from '../models/StatsLog';
 import Version from '../models/Version';
 import {
   firstOrDefault,
@@ -395,6 +396,33 @@ const getVersion: () => Promise<Version> = async () => {
   return results[0].rows.item(0) as Version;
 };
 
+const getStatsLog = async (stats_id: number, date: number) => {
+  const rows = await select<StatsLog>(
+    'SELECT * FROM stats_log WHERE stats_id = ? AND date = ?',
+    [stats_id, date],
+  );
+  return firstOrDefault<StatsLog>(rows);
+};
+
+const setStatsLog = async (stats_id: number, date: number, value: number) => {
+  try {
+    const db = await getDatabase();
+    await db.transaction(tx => {
+      tx.executeSql('DELETE FROM stats_log WHERE stats_id = ? AND date = ?', [
+        stats_id,
+        date,
+      ]);
+      tx.executeSql(
+        'INSERT INTO stats_log(stats_id, date, value) VALUES (?,?,?)',
+        [stats_id, date, value],
+      );
+    });
+    return result(true);
+  } catch (ex) {
+    return result(false, ex);
+  }
+};
+
 const sqlDatabase: Database = {
   findSkill,
   getChecklistItems,
@@ -413,6 +441,8 @@ const sqlDatabase: Database = {
   saveSkills,
   saveTextLog,
   updateSkillContent,
+  getStatsLog,
+  setStatsLog,
 };
 
 export default sqlDatabase;

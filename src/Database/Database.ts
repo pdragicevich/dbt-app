@@ -6,6 +6,7 @@ import Result, { DataResult } from '../models/Result';
 import Skill from '../models/Skill';
 import SkillBrowserResult from '../models/SkillBrowserResult';
 import SkillSearchResult from '../models/SkillSearchResult';
+import StatsLog from '../models/StatsLog';
 import Version from '../models/Version';
 
 interface Database {
@@ -35,6 +36,8 @@ interface Database {
   saveTextLog: (_arg0: number, _arg1: string[]) => Promise<Result>;
   updateSkillContent: (_arg0: number, _arg1: string) => Promise<Result>;
   getVersion: () => Promise<Version>;
+  getStatsLog: (_arg0: number, _arg1: number) => Promise<StatsLog | null>;
+  setStatsLog: (_arg0: number, _arg1: number, _arg2: number) => Promise<Result>;
 }
 
 export default Database;
