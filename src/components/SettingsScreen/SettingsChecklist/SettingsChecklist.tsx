@@ -48,6 +48,8 @@ const SettingsChecklist = ({ logId }: { logId: number }) => {
             value={item.item}
             onChangeText={text => setChecklistItem(index, text)}
             autoComplete="off"
+            children={undefined}
+            selectionColor="#000000"
           />
         </View>
       ))}

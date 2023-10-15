@@ -1,4 +1,5 @@
 import { useAppContext } from '../../AppContext';
+import LogType from '../../const/LogType';
 import LogDef from '../../models/LogDef';
 import LogProps from '../../models/LogProps';
 import LogLine from './LogLine';
@@ -14,7 +15,7 @@ const TextLog = ({ logId, onDismiss }: LogProps) => {
   useEffect(() => {
     async function initTextLog() {
       const row = await db.readLogDef(logId);
-      if (row != null) {
+      if (row != null && row.type === LogType.Text) {
         setLogDef(row);
       } else {
         onDismiss('Problem loading text log details!');

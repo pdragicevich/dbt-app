@@ -1,4 +1,5 @@
 import { useAppContext } from '../../AppContext';
+import LogType from '../../const/LogType';
 import LogDef from '../../models/LogDef';
 import LogItem from '../../models/LogItem';
 import LogProps from '../../models/LogProps';
@@ -18,7 +19,7 @@ const OptionLog = ({ logId, onDismiss }: LogProps) => {
   useEffect(() => {
     async function initOptionLog() {
       const logDef = await db.readLogDef(logId);
-      if (logDef != null) {
+      if (logDef != null && logDef.type === LogType.Option) {
         const logItems = await db.getOptionLogItems(logId);
         if (logItems.length > 0) {
           setState({ logDef, logItems });

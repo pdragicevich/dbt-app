@@ -23,6 +23,9 @@ const LogLine = ({
       value={value}
       onChangeText={handleChanged}
       autoFocus={autoFocus}
+      autoComplete="off"
+      children={undefined}
+      selectionColor="#000000"
     />
   );
 };
